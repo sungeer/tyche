@@ -1,9 +1,9 @@
 from starlette.applications import Starlette
 
-from hostess.core.errors import exception_handlers
 from app.core.events import lifespan
-from hostess.core.routes import routes
+from app.core.handlers import exception_handlers
 from app.middleware import middleware
+from app.routes import routes
 
 app = Starlette(
     routes=routes,
