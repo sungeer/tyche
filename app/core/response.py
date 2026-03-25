@@ -1,5 +1,6 @@
 import datetime
 import decimal
+from typing import Any
 
 import orjson
 from starlette.responses import JSONResponse
@@ -16,8 +17,7 @@ def json_encoder(obj):
 
 
 class Response(JSONResponse):
-    def render(self, content) -> bytes:
-        # content is Any
+    def render(self, content: Any) -> bytes:
         return orjson.dumps(content, default=json_encoder)
 
 
