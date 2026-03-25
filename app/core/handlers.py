@@ -1,6 +1,6 @@
 from loguru import logger
 
-from app.errors import BusinessError, AuthenticationError, PermissionDeniedError
+from app.core.exceptions import BusinessError, AuthenticationError, ForbiddenError, BadRequestError
 from app.core.response import Response
 
 
@@ -13,7 +13,7 @@ async def business_error(request, exc):
     )
 
 
-# 请求错误
+# 请求参数错误
 async def bad_request(request, exc):
     return Response(
         {'code': 400, 'msg': exc.msg, 'data': None},
@@ -30,31 +30,28 @@ async def auth_error(request, exc):
 
 
 # 无权限
-async def permission_error(request, exc):
+async def forbidden_error(request, exc):
     return Response(
         {'code': 403, 'msg': exc.msg, 'data': None},
         status_code=403,
     )
 
 
-# 无法找到
+# 路由匹配不到
 async def not_found(request, exc):
     return Response(
-        {'code': 404, 'msg': exc.msg, 'data': None},
+        {'code': 404, 'msg': exc.detail, 'data': None},
         status_code=404,
     )
 
 
-# 500
+# 内部错误 500
 async def server_error(request, exc):
     """兜底处理
     数据库崩了 依赖超时 等 系统级异常
     监控在这里感知
     """
-    logger.exception(
-        f'unhandled exception on [{request.method}] [{request.url.path}]',
-        exc_info=exc,
-    )
+    logger.exception(f'unhandled exception on [{request.method}] [{request.url.path}]')
     return Response(
         {'code': 500, 'msg': '服务器内部错误', 'data': None},
         status_code=500,
@@ -62,13 +59,11 @@ async def server_error(request, exc):
 
 
 exception_handlers = {
-    400: bad_request,  # 整数键
-    401: auth_error,
-    403: permission_error,
-    404: not_found,  # 处理主动声明为 404 的 HTTP 异常
+    404: not_found,  # 整数键 由 Starlette 内部触发
     500: server_error,  # raise HTTPException(status_code=500, detail='something wrong') 触发
     BusinessError: business_error,  # 类键
+    BadRequestError: bad_request,
     AuthenticationError: auth_error,
-    PermissionDeniedError: permission_error,
+    ForbiddenError: forbidden_error,
     Exception: server_error,  # 必须放最后 处理所有没被预料到的 Python 异常
 }
