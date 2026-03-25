@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import create_async_engine
 
-from hostess.settings import settings
+from app.core.config import settings
 
 engine = create_async_engine(
     settings.db_url,
