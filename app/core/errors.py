@@ -1,13 +1,13 @@
-from starlette.responses import JSONResponse
 from loguru import logger
 
 from app.errors import BusinessError, AuthenticationError, PermissionDeniedError
+from app.core.response import Response
 
 
 # 业务失败
 async def business_error(request, exc):
     # 前端通过 code 判断
-    return JSONResponse(
+    return Response(
         {'code': exc.code, 'msg': exc.msg, 'data': exc.data},
         status_code=200,
     )
@@ -15,7 +15,7 @@ async def business_error(request, exc):
 
 # 请求错误
 async def bad_request(request, exc):
-    return JSONResponse(
+    return Response(
         {'code': 400, 'msg': exc.msg, 'data': None},
         status_code=400,
     )
@@ -23,7 +23,7 @@ async def bad_request(request, exc):
 
 # 未登录
 async def auth_error(request, exc):
-    return JSONResponse(
+    return Response(
         {'code': 401, 'msg': exc.msg, 'data': None},
         status_code=401,
     )
@@ -31,7 +31,7 @@ async def auth_error(request, exc):
 
 # 无权限
 async def permission_error(request, exc):
-    return JSONResponse(
+    return Response(
         {'code': 403, 'msg': exc.msg, 'data': None},
         status_code=403,
     )
@@ -39,7 +39,7 @@ async def permission_error(request, exc):
 
 # 无法找到
 async def not_found(request, exc):
-    return JSONResponse(
+    return Response(
         {'code': 404, 'msg': exc.msg, 'data': None},
         status_code=404,
     )
@@ -55,7 +55,7 @@ async def server_error(request, exc):
         f'unhandled exception on [{request.method}] [{request.url.path}]',
         exc_info=exc,
     )
-    return JSONResponse(
+    return Response(
         {'code': 500, 'msg': '服务器内部错误', 'data': None},
         status_code=500,
     )
@@ -70,5 +70,5 @@ exception_handlers = {
     BusinessError: business_error,  # 类键
     AuthenticationError: auth_error,
     PermissionDeniedError: permission_error,
-    Exception: server_error,  # 处理所有没被预料到的 Python 异常
+    Exception: server_error,  # 必须放最后 处理所有没被预料到的 Python 异常
 }
