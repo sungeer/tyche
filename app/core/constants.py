@@ -1,7 +1,0 @@
-# 业务 code 常量
-class BizCode:
-    OK = 0
-    PARAM_ERROR = 1001
-    STOCK_INSUFFICIENT = 2001
-    USER_DISABLED = 2002
-    ORDER_EXPIRED = 2003
