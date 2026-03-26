@@ -1,5 +1,5 @@
 from src.core.logger import setup_logger
-from src.core.config import settings
+from src.core.config import settings  # noqa
 
 # 消费者 进程 启动时 初始化日志
 setup_logger()
