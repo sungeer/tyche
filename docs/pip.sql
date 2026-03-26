@@ -11,6 +11,8 @@ python -m pip install asyncmy httpx sqlalchemy starlette orjson uvicorn loguru c
 
 python -m pip install huey
 
+python -m pip install PyJWT
+
 
 
 uvicorn hostess:app --host 0.0.0.0 --port 8000

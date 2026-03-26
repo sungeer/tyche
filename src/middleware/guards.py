@@ -1,0 +1,51 @@
+import jwt
+from starlette.authentication import AuthenticationBackend, AuthenticationError, AuthCredentials, BaseUser
+
+from src.core.response import Response
+
+
+class JWTUser(BaseUser):
+
+    def __init__(self, user_id, username, roles):
+        self.user_id = user_id  # int
+        self.username = username  # str
+        self.roles = roles  # list[str]
+
+    @property
+    def is_authenticated(self):
+        return True
+
+    @property
+    def display_name(self):
+        return self.username
+
+
+# 认证中间件
+class JWTAuthBackend(AuthenticationBackend):
+
+    async def authenticate(self, conn):
+        if 'Authorization' not in conn.headers:
+            return None  # 匿名用户
+
+        auth = conn.headers['Authorization']
+        try:
+            scheme, token = auth.split()
+            if scheme.lower() != 'bearer':
+                return None
+            payload = jwt.decode(token, 'your-secret', algorithms=['HS256'])
+        except Exception:
+            raise AuthenticationError('Invalid JWT token')
+
+        user_id = payload['user_id']
+        username = payload['username']
+        roles = payload.get('roles', [])  # ['order:create', 'order:read']
+
+        # roles 同时写入 AuthCredentials 和 JWTUser
+        return AuthCredentials(roles), JWTUser(user_id, username, roles)
+
+
+def on_auth_error(request, exc: AuthenticationError):
+    return Response(
+        {'code': 401, 'msg': str(exc), 'data': None},
+        status_code=401,
+    )
