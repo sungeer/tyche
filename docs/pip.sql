@@ -30,6 +30,10 @@ uvicorn app:app
 
 huey_consumer worker.huey
 
+# pycharm
+Module name -> huey.bin.huey_consumer
+Parameters -> worker.huey
+
 
 
 ps -ef | grep -v grep | grep uvicorn
