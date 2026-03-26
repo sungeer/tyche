@@ -1,7 +1,7 @@
 from contextlib import asynccontextmanager
 
-from app.core.logger import setup_logger
-from app import db
+from src.core.logger import setup_logger
+from src.core import db
 
 
 @asynccontextmanager

@@ -12,10 +12,9 @@ if with_debug or is_win:
 else:
     config_name = 'prod'
 
-base_dir = Path(__file__).resolve().parent.parent.parent
-
 
 class BaseConfig:
+    base_dir = Path(__file__).resolve().parent.parent.parent
     log_path = base_dir / 'logs/app.log'
 
 

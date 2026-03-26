@@ -1,7 +1,7 @@
 from starlette.middleware import Middleware
 from starlette.middleware.cors import CORSMiddleware
 
-from app.middleware import cors
+from src.middleware import cors
 
 middleware = [
     Middleware(

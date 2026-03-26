@@ -1,7 +1,7 @@
 from starlette.routing import Route
 
-from hostess.domains.tasks import views as task_views
-from hostess.domains.users import views as user_views
+from src.domains.tasks import views as task_views
+from src.domains.users import views as user_views
 
 routes = [
     Route('/health.live', health_live, methods=['GET']),  # 存活探针
