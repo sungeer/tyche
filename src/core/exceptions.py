@@ -42,14 +42,14 @@ class ForbiddenError(AppError):
 
 
 # JWT 已过期
-class TokenExpiredError(AppError):
+class TokenExpiredError(AuthenticationError):
 
     def __init__(self, msg='JWT Token 已过期'):
         self.msg = msg
 
 
 # JWT 非法或格式错误
-class TokenInvalidError(AppError):
+class TokenInvalidError(AuthenticationError):
 
     def __init__(self, msg='JWT Token 非法或格式错误'):
         self.msg = msg
