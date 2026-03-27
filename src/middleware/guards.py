@@ -2,6 +2,7 @@ import jwt
 from starlette.authentication import AuthenticationBackend, AuthenticationError, AuthCredentials, BaseUser
 
 from src.core.response import Response
+from src.utils import jose
 
 
 class JWTUser(BaseUser):
@@ -32,7 +33,7 @@ class JWTAuthBackend(AuthenticationBackend):
             scheme, token = auth.split()
             if scheme.lower() != 'bearer':
                 return None
-            payload = jwt.decode(token, 'your-secret', algorithms=['HS256'])
+            payload = jose.verify_access_token(token)
         except Exception:
             raise AuthenticationError('Invalid JWT token')
 

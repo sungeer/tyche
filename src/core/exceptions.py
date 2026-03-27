@@ -39,3 +39,17 @@ class ForbiddenError(AppError):
 
     def __init__(self, msg='无权限执行此操作'):
         self.msg = msg
+
+
+# JWT 已过期
+class TokenExpiredError(AppError):
+
+    def __init__(self, msg='JWT Token 已过期'):
+        self.msg = msg
+
+
+# JWT 非法或格式错误
+class TokenInvalidError(AppError):
+
+    def __init__(self, msg='JWT Token 非法或格式错误'):
+        self.msg = msg

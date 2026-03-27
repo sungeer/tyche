@@ -63,7 +63,7 @@ CREATE TABLE `users` (
     `id`            INT          NOT NULL AUTO_INCREMENT COMMENT '主键',
     `username`      VARCHAR(64)  NOT NULL                COMMENT '用户名，全局唯一',
     `email`         VARCHAR(254) NOT NULL                COMMENT '邮箱地址，全局唯一',
-    `password_hash` VARCHAR(256) NOT NULL                COMMENT 'werkzeug 生成的密码哈希',
+    `password_hash` VARCHAR(256) NOT NULL                COMMENT '生成的密码哈希',
     `is_active`     TINYINT(1)   NOT NULL DEFAULT 1      COMMENT '账号是否启用，0 等同于封号',
     `is_confirmed`  TINYINT(1)   NOT NULL DEFAULT 0      COMMENT '邮箱是否已验证',
     `storage_quota` BIGINT       NOT NULL DEFAULT 1073741824 COMMENT '存储上限（字节），默认 1 GB；-1 表示无限制',
@@ -203,27 +203,37 @@ INSERT IGNORE INTO `roles` (`name`, `description`, `is_default`) VALUES
 
 -- 角色-权限绑定
 INSERT IGNORE INTO `roles_permissions` (`role_id`, `permission_id`)
-SELECT r.id, p.id FROM `roles` r JOIN `permissions` p
+SELECT r.id, p.id
+FROM `roles` r
+JOIN `permissions` p
     ON  r.name = 'Viewer'
     AND p.name IN ('QUERY');
 
 INSERT IGNORE INTO `roles_permissions` (`role_id`, `permission_id`)
-SELECT r.id, p.id FROM `roles` r JOIN `permissions` p
+SELECT r.id, p.id
+FROM `roles` r
+JOIN `permissions` p
     ON  r.name = 'Member'
     AND p.name IN ('QUERY','UPLOAD','CREATE_KB','MANAGE_OWN_KB');
 
 INSERT IGNORE INTO `roles_permissions` (`role_id`, `permission_id`)
-SELECT r.id, p.id FROM `roles` r JOIN `permissions` p
+SELECT r.id, p.id
+FROM `roles` r
+JOIN `permissions` p
     ON  r.name = 'Contributor'
     AND p.name IN ('QUERY','UPLOAD','CREATE_KB','MANAGE_OWN_KB','SHARE_KB','PUBLISH_KB');
 
 INSERT IGNORE INTO `roles_permissions` (`role_id`, `permission_id`)
-SELECT r.id, p.id FROM `roles` r JOIN `permissions` p
+SELECT r.id, p.id
+FROM `roles` r
+JOIN `permissions` p
     ON  r.name = 'Moderator'
     AND p.name IN ('QUERY','UPLOAD','CREATE_KB','MANAGE_OWN_KB','SHARE_KB','PUBLISH_KB','MODERATE');
 
 INSERT IGNORE INTO `roles_permissions` (`role_id`, `permission_id`)
-SELECT r.id, p.id FROM `roles` r JOIN `permissions` p
+SELECT r.id, p.id
+FROM `roles` r
+JOIN `permissions` p
     ON  r.name = 'Administrator'
     AND p.name IN ('QUERY','UPLOAD','CREATE_KB','MANAGE_OWN_KB','SHARE_KB','PUBLISH_KB','MODERATE','MANAGE_USERS','ADMINISTER');
 
@@ -295,6 +305,7 @@ CREATE TABLE `conversation_turns` (
 -- ----------------------------------------------------------------
 CREATE TABLE `kb_documents` (
     `id`          INT          NOT NULL AUTO_INCREMENT,
+    `user_id`     INT          NOT NULL COMMENT '关联用户 ID',
     `kb_id`       INT          NOT NULL COMMENT '归属知识库',
     `filename`    VARCHAR(255) NOT NULL COMMENT '原始文件名',
     `file_path`   VARCHAR(500) NOT NULL COMMENT '存储路径或对象存储 key',

@@ -15,11 +15,20 @@ else:
 
 class BaseConfig:
     base_dir = Path(__file__).resolve().parent.parent.parent
+
     log_path = base_dir / 'logs/app.log'
+
+    jwt_algorithm = 'HS256'  # 加密算法
+    jwt_access_token_expire_minutes = 30  # token 有效期 30s
+    jwt_refresh_token_expire_days = 7
 
 
 class DevConfig(BaseConfig):
     with_debug = 1
+
+    # 'openssl rand -hex 32'
+    jwt_secret_key = 'cb6103ca0209a5ae546ebea25acfafd5bcebe9ffbd37cb9ad58704c53fee99c1'
+
     db_passwd = quote_plus('admin')
     db_host = '127.0.0.1'
     db_url = f'mysql+asyncmy://root:{db_passwd}@{db_host}:3306/hostess?charset=utf8mb4'
@@ -27,6 +36,9 @@ class DevConfig(BaseConfig):
 
 class ProdConfig(BaseConfig):
     with_debug = 0
+
+    jwt_secret_key = 'cb6103ca0209a5ae546ebea25acfafd5bcebe9ffbd37cb9ad58704c53fee99c1'
+
     db_passwd = quote_plus('admin')
     db_host = '127.0.0.1'
     db_url = f'mysql+asyncmy://root:{db_passwd}@{db_host}:3306/hostess?charset=utf8mb4'
