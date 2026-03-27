@@ -1,4 +1,3 @@
-import jwt
 from starlette.authentication import AuthenticationBackend, AuthenticationError, AuthCredentials, BaseUser
 
 from src.core.response import Response
