@@ -18,3 +18,27 @@ def get_page_info(total, page=1, per_page=20):
         'has_prev': has_prev
     }
     return page_info
+
+
+async def query_by_filters(filters: dict | None = None):
+    allowed_fields = {'id', 'name', 'age'}
+    if filters:
+        invalid = set(filters) - allowed_fields
+        if invalid:
+            raise ValueError(f'非法字段: {invalid}')
+
+    where_clause = ''
+    if filters:
+        conditions = ' AND '.join(f'{field} = :{field}' for field in filters)
+        where_clause = f'WHERE {conditions}'
+
+    sql_str = f'''
+        SELECT id, name, age
+        FROM user
+        {where_clause}
+    '''
+
+    async with engine.connect() as conn:
+        result = await conn.execute(text(sql_str), filters or {})
+        row = result.mappings().first()
+        return dict(row) if row else None
