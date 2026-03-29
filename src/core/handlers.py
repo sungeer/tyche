@@ -24,7 +24,7 @@ async def bad_request(request, exc):
 # 未登录
 async def auth_error(request, exc):
     return Response(
-        {'code': 401, 'msg': exc.msg, 'data': None},
+        {'code': 401, 'msg': exc.detail, 'data': None},
         status_code=401,
     )
 
@@ -33,14 +33,6 @@ async def auth_error(request, exc):
 async def forbidden_error(request, exc):
     return Response(
         {'code': 403, 'msg': exc.detail, 'data': None},
-        status_code=403,
-    )
-
-
-# 无权限
-async def forbidden_error_ext(request, exc):
-    return Response(
-        {'code': 403, 'msg': exc.msg, 'data': None},
         status_code=403,
     )
 
@@ -67,12 +59,11 @@ async def server_error(request, exc):
 
 
 exception_handlers = {
+    401: auth_error,
     403: forbidden_error,
     404: not_found,  # 整数键 由 Starlette 内部触发
     500: server_error,  # raise HTTPException(status_code=500, detail='something wrong') 触发
     BusinessError: business_error,  # 类键
     BadRequestError: bad_request,
-    AuthenticationError: auth_error,
-    ForbiddenError: forbidden_error_ext,
     Exception: server_error,  # 必须放最后 处理所有没被预料到的 Python 异常
 }

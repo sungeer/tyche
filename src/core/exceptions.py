@@ -22,34 +22,15 @@ class BadRequestError(AppError):
         self.msg = msg
 
 
-class AuthenticationError(AppError):
-    """未登录
-    Token 无效
-    HTTP 401
-    """
-
-    def __init__(self, msg='未登录或登录已过期'):
-        self.msg = msg
-
-
-class ForbiddenError(AppError):
-    """无操作权限
-    HTTP 403
-    """
-
-    def __init__(self, msg='无权限执行此操作'):
-        self.msg = msg
-
-
 # JWT 已过期
-class TokenExpiredError(AuthenticationError):
+class TokenExpiredError(Exception):
 
     def __init__(self, msg='JWT Token 已过期'):
         self.msg = msg
 
 
 # JWT 非法或格式错误
-class TokenInvalidError(AuthenticationError):
+class TokenInvalidError(Exception):
 
     def __init__(self, msg='JWT Token 非法或格式错误'):
         self.msg = msg

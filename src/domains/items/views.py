@@ -5,7 +5,7 @@ from src.domains.items import service
 from src.utils import serial
 
 
-@requires('authenticated')  # 需要登录
+@requires('authenticated', status_code=401)  # 需要登录
 async def get_profile(request):
     user_id = request.user.user_id
     username = request.user.username

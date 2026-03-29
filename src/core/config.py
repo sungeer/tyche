@@ -3,11 +3,11 @@ import sys
 from pathlib import Path
 from urllib.parse import quote_plus
 
-with_debug = os.getenv('DEBUG') == '1'
+is_debug = os.getenv('DEBUG') == '1'
 
 is_win = sys.platform.startswith('win')
 
-if with_debug or is_win:
+if is_debug or is_win:
     config_name = 'dev'
 else:
     config_name = 'prod'
@@ -26,6 +26,8 @@ class BaseConfig:
 class DevConfig(BaseConfig):
     with_debug = 1
 
+    origins = ['http://127.0.0.1:8080']  # cors 允许的来源 前端应用使用的端口
+
     # 'openssl rand -hex 32'
     jwt_secret_key = 'cb6103ca0209a5ae546ebea25acfafd5bcebe9ffbd37cb9ad58704c53fee99c1'
 
@@ -36,6 +38,8 @@ class DevConfig(BaseConfig):
 
 class ProdConfig(BaseConfig):
     with_debug = 0
+
+    origins = ['http://127.0.0.1:8080']  # cors 允许的来源 前端应用使用的端口
 
     jwt_secret_key = 'cb6103ca0209a5ae546ebea25acfafd5bcebe9ffbd37cb9ad58704c53fee99c1'
 

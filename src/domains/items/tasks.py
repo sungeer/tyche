@@ -1,6 +1,6 @@
 from huey import crontab
 
-from src.core.worker import huey
+from src.core.queue import huey
 from src.core.logger import logger
 
 

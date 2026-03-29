@@ -8,4 +8,4 @@ setup_logger()
 import src.domains.items.tasks  # noqa
 import src.domains.users.tasks  # noqa
 
-from src.core.worker import huey  # noqa
+from src.core.queue import huey  # noqa

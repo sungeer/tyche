@@ -2,6 +2,7 @@ from starlette.authentication import AuthenticationBackend, AuthenticationError,
 
 from src.core.response import Response
 from src.utils import jose
+from src.core.exceptions import TokenExpiredError, TokenInvalidError
 
 
 class JWTUser(BaseUser):
@@ -33,8 +34,12 @@ class JWTAuthBackend(AuthenticationBackend):
             if scheme.lower() != 'bearer':
                 return None
             payload = jose.verify_access_token(token)
+        except TokenExpiredError:
+            raise
+        except TokenInvalidError:
+            raise
         except Exception:
-            raise AuthenticationError('Invalid JWT token')
+            raise AuthenticationError('Invalid JWT token')  # 此处异常不会越出中间件
 
         user_id = payload['user_id']
         username = payload['username']
@@ -44,7 +49,7 @@ class JWTAuthBackend(AuthenticationBackend):
         return AuthCredentials(roles), JWTUser(user_id, username, roles)
 
 
-def on_auth_error(request, exc: AuthenticationError):
+def on_auth_error(request, exc):
     return Response(
         {'code': 401, 'msg': str(exc), 'data': None},
         status_code=401,
