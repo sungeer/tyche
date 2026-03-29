@@ -34,10 +34,10 @@ class JWTAuthBackend(AuthenticationBackend):
             if scheme.lower() != 'bearer':
                 return None
             payload = jose.verify_access_token(token)
-        except TokenExpiredError:
-            raise
-        except TokenInvalidError:
-            raise
+        except TokenExpiredError as e:
+            raise AuthenticationError(e.msg)
+        except TokenInvalidError as e:
+            raise AuthenticationError(e.msg)
         except Exception:
             raise AuthenticationError('Invalid JWT token')  # 此处异常不会越出中间件
 

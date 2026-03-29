@@ -1,6 +1,6 @@
 from loguru import logger
 
-from src.core.exceptions import BusinessError, AuthenticationError, ForbiddenError, BadRequestError
+from src.core.exceptions import BusinessError, BadRequestError
 from src.core.response import Response
 
 
