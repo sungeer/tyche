@@ -4,9 +4,9 @@ base_dir = Path(__file__).resolve().parent.parent.parent
 
 data_dir = base_dir / 'datas'
 
-excel_in_dir = base_dir / 'in'
+input_dir = base_dir / 'inputs'
 
-txt_out_dir = base_dir / 'out'
+output_dir = base_dir / 'outputs'
 
 temp_dir = base_dir / 'temp'
 

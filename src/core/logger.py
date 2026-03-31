@@ -33,6 +33,13 @@ def setup_logger():
                 'filename': str(log_dir / f'red_area.{today}.log'),
                 'encoding': 'utf-8',
             },
+            'to_pdf': {
+                'class': 'logging.FileHandler',
+                'level': 'INFO',
+                'formatter': 'standard',
+                'filename': str(log_dir / f'to_pdf.{today}.log'),
+                'encoding': 'utf-8',
+            },
         },
 
         'root': {
@@ -43,6 +50,11 @@ def setup_logger():
         'loggers': {
             'red_area': {
                 'handlers': ['console', 'red_area'],
+                'level': 'INFO',
+                'propagate': False,
+            },
+            'to_pdf': {
+                'handlers': ['console', 'to_pdf'],
                 'level': 'INFO',
                 'propagate': False,
             },
