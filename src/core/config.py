@@ -33,7 +33,7 @@ class DevConfig(BaseConfig):
 
     db_passwd = quote_plus('admin')
     db_host = '127.0.0.1'
-    db_url = f'mysql+asyncmy://root:{db_passwd}@{db_host}:3306/hostess?charset=utf8mb4'
+    db_url = f'mysql+mysqldb://root:{db_passwd}@{db_host}:3306/hostess?charset=utf8mb4'
 
 
 class ProdConfig(BaseConfig):
@@ -45,7 +45,7 @@ class ProdConfig(BaseConfig):
 
     db_passwd = quote_plus('admin')
     db_host = '127.0.0.1'
-    db_url = f'mysql+asyncmy://root:{db_passwd}@{db_host}:3306/hostess?charset=utf8mb4'
+    db_url = f'mysql+mysqldb://root:{db_passwd}@{db_host}:3306/hostess?charset=utf8mb4'
 
 
 config_map = {

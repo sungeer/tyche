@@ -8,4 +8,4 @@ from src.core import db
 async def lifespan(app):
     setup_logger()
     yield
-    await db.engine.dispose()
+    db.engine.dispose()

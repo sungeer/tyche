@@ -1,8 +1,8 @@
-from sqlalchemy.ext.asyncio import create_async_engine
+from sqlalchemy import create_engine
 
 from src.core.config import settings
 
-engine = create_async_engine(
+engine = create_engine(
     settings.db_url,
     echo=False,  # 不打印SQL语句
     pool_size=20,  # 空闲连接 上限

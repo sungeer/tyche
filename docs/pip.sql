@@ -5,9 +5,13 @@ pip freeze > requirements.txt
 pip install -r requirements.txt
 
 
+# 卸载
+pip uninstall asyncmy
 
 
-python -m pip install asyncmy httpx sqlalchemy starlette orjson uvicorn loguru cryptography
+python -m pip install starlette uvicorn loguru cryptography httpx sqlalchemy orjson
+
+python -m pip install mysqlclient
 
 python -m pip install huey
 
