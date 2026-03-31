@@ -24,9 +24,6 @@ class Command(BaseCommand):
             if not input_jpg.exists():
                 raise FileNotFoundError(f'文件不存在：{input_jpg}')
 
-            if not input_jpg.suffix.lower() not in ('.jpg', '.jpeg'):
-                raise ValueError(f'文件不是 JPG 格式：{input_jpg}')
-
             output_pdf = settings.output_dir / 'output.pdf'
 
             jpg_to_pdf(input_jpg, output_pdf)
