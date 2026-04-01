@@ -1,7 +1,7 @@
 from starlette.authentication import requires
 
 from src.core.response import ok
-from src.domains.items import service
+from src.domains.items import service as item_service
 from src.utils import serial
 
 
@@ -21,6 +21,6 @@ async def create_order(request):
     roles = request.user.roles  # 从 JWTUser 取
     scopes = request.auth.scopes  # 从 AuthCredentials 取 和 roles 内容一样
 
-    order = await service.create_order(user_id, roles, body)
+    order = await item_service.create_item(user_id, roles, body)
     data = {'order_id': order.id}
     return ok(data=data, msg='下单成功')
