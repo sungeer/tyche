@@ -1,5 +1,3 @@
-from starlette.authentication import requires
-
 from src.core.response import ok
 from src.domains.auth import service as auth_service
 from src.utils import serial
