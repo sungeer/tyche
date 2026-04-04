@@ -2,11 +2,13 @@ from huey import crontab
 
 from src.core.queue import huey
 from src.core.logger import logger
+from src.core.context import run_id_var
 
 
 # 耗时异步任务
 @huey.task(retries=3, retry_delay=60)
-def process_item_export(item_ids: list[int]):
+def process_item_export(item_ids: list[int], run_id='-'):
+    run_id_var.set(run_id)
     logger.info(f"开始导出 {len(item_ids)} 条数据")
     # 耗时逻辑...
     logger.info("导出完成")

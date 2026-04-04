@@ -3,6 +3,7 @@ from starlette.authentication import AuthenticationBackend, AuthenticationError,
 from src.core.response import Response
 from src.utils import jose
 from src.core.exceptions import TokenExpiredError, TokenInvalidError
+from src.core.context import run_id_var, new_run_id
 
 
 class JWTUser(BaseUser):
@@ -25,6 +26,8 @@ class JWTUser(BaseUser):
 class JWTAuthBackend(AuthenticationBackend):
 
     async def authenticate(self, conn):
+        run_id_var.set(new_run_id())  # 每个请求 统一分配 run_id
+
         if 'Authorization' not in conn.headers:
             return None  # 匿名用户
 
