@@ -4,16 +4,16 @@
 
 ## 项目概述
 
-**hostess** 是一个基于 **Starlette**（ASGI）的异步 Python REST API，用于 RAG/知识库问答系统。（README 描述的是一个 Flask 博客——忽略它，内容已过时。）
+**hostess** 是一个基于 **Starlette**（ASGI）的异步 Python REST API，作为一个Agent应用系统后端。
 
 ## 启动服务器
 
 ```bash
-# 开发环境（端口 7788 与测试脚本一致）
-uvicorn app:app --port 7788
+# 开发环境
+uvicorn app:app --port 8848
 
 # 生产环境
-uvicorn app:app --workers 4 --host 0.0.0.0 --port 8000
+uvicorn app:app --workers 4 --host 0.0.0.0 --port 8848
 ```
 
 ## 启动任务工作进程
@@ -35,7 +35,7 @@ python tests/task_list.py
 项目没有 `requirements.txt`，请手动安装（参考 `docs/pip.sql`）：
 
 ```bash
-python -m pip install asyncmy httpx sqlalchemy starlette orjson uvicorn loguru cryptography huey PyJWT
+python -m pip install starlette uvicorn loguru cryptography httpx sqlalchemy orjson mysqlclient huey PyJWT
 ```
 
 ## 架构

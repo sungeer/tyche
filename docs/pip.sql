@@ -19,17 +19,17 @@ python -m pip install PyJWT
 
 
 
-uvicorn hostess:app --host 0.0.0.0 --port 8000
+uvicorn hostess:app --host 0.0.0.0 --port 8848
 
 
-uvicorn hostess:app --port 7788
+uvicorn hostess:app --port 8848
 
 
 # 多 worker 进程 充分利用多核 CPU
-uvicorn app:app --workers 4 --host 0.0.0.0 --port 8000
+uvicorn app:app --workers 4 --host 0.0.0.0 --port 8848
 
 # 或者用 gunicorn 管理 uvicorn workers（更稳健）
-gunicorn app:app -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000
+gunicorn app:app -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8848
 
 
 uvicorn app:app
