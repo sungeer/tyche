@@ -1,9 +1,9 @@
 from datetime import datetime
 
 from huey import crontab
+from loguru import logger
 
 from src.core.queue import huey
-from src.core.logger import logger
 from src.core.context import run_id_var, new_run_id
 
 

@@ -1,3 +1,4 @@
+from loguru import logger
 from starlette.authentication import AuthenticationBackend, AuthenticationError, AuthCredentials, BaseUser
 
 from src.core.response import Response
@@ -35,10 +36,13 @@ class JWTAuthBackend(AuthenticationBackend):
                 return None
             payload = jose.verify_access_token(token)
         except TokenExpiredError as e:
+            logger.info(f'[JWT] Token 已过期，path={conn.url.path}')
             raise AuthenticationError(e.msg)
         except TokenInvalidError as e:
+            logger.warning(f'[JWT] Token 非法，path={conn.url.path}，reason={str(e)}')
             raise AuthenticationError(e.msg)
         except Exception:
+            logger.warning(f'[JWT] Token 解析失败，path={conn.url.path}')
             raise AuthenticationError('Invalid JWT token')  # 此处异常不会越出中间件
 
         user_id = payload['user_id']
