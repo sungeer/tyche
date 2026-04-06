@@ -8,11 +8,11 @@ src/
   routes.py        # 所有路由集中注册
   core/            # 基础设施（db、config、logger、response 等）
   domains/         # 业务领域，每个域三层：repository / service / views
-  middleware/       # 中间件（RunId → CORS → Auth）
+  middleware/      # 中间件（RunId → CORS → Auth）
   utils/           # 无副作用纯工具函数
 ```
 
-`app.py` 是 Web 进程入口，`worker.py` 是 Huey 消费者进程入口。
+`app.py` 是 Web 进程入口，`worker.py` 是 Huey 消费者进程入口
 
 ## 架构约定
 
@@ -27,13 +27,9 @@ src/
 
 ## 响应格式
 
-```python
-# 成功
-ok(data)           # {"code": 0, "msg": "success", "data": ...}
+- 业务成功使用 `ok(data)` 返回 `{"code": 0, "msg": "success", "data": ...}`
 
-# 业务失败（HTTP 200）
-fail(BizCode.xxx)  # {"code": 3004, "msg": "...", "data": null}
-```
+- 业务失败（HTTP 200）使用 `fail(BizCode.xxx)` 返回 `{"code": 3004, "msg": "...", "data": null}`
 
 ## 异常体系
 
@@ -48,4 +44,4 @@ fail(BizCode.xxx)  # {"code": 3004, "msg": "...", "data": null}
 
 ## 追踪机制
 
-每个请求/任务都有 `run_id`，通过 `ContextVar` 传递，统一注入日志。
+每个请求/任务都有 `run_id`，通过 `ContextVar` 传递，统一注入日志
