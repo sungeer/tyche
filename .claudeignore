@@ -1,0 +1,32 @@
+# 虚拟环境
+.venv/
+
+# 缓存与字节码
+__pycache__/
+*.py[cod]
+*$py.class
+
+# 构建与打包产物
+build/
+dist/
+develop-eggs/
+*.egg-info/
+.installed.cfg
+*.egg
+*.whl
+
+# 敏感信息与本地配置
+.env
+
+# 日志与临时文件
+*.log
+logs/*
+
+# IDE 和编辑器配置
+.idea/
+.vscode/
+
+# 无需主动查看
+demos/
+docs/
+tests/
