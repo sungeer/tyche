@@ -25,6 +25,18 @@ class DevConfig(BaseConfig):
     db_host = '127.0.0.1'
     db_url = f'mysql+mysqldb://root:{db_passwd}@{db_host}:3306/hostess?charset=utf8mb4'
 
+    # 行内私有 LLM
+    llm_base_url = 'http://llm.internal:8080'
+    llm_api_key = 'dev-llm-key'
+
+    # 行内私有 ChromaDB
+    chroma_host = '127.0.0.1'
+    chroma_port = 8000
+
+    # 行内风控规则引擎
+    risk_engine_url = 'http://risk-engine.internal'
+    risk_engine_api_key = 'dev-risk-key'
+
 
 class ProdConfig(BaseConfig):
     is_debug = 0
@@ -36,6 +48,18 @@ class ProdConfig(BaseConfig):
     db_passwd = quote_plus('admin')
     db_host = '127.0.0.1'
     db_url = f'mysql+mysqldb://root:{db_passwd}@{db_host}:3306/hostess?charset=utf8mb4'
+
+    # 行内私有 LLM
+    llm_base_url = os.getenv('LLM_BASE_URL', 'http://llm.internal:8080')
+    llm_api_key = os.getenv('LLM_API_KEY', '')
+
+    # 行内私有 ChromaDB
+    chroma_host = os.getenv('CHROMA_HOST', '127.0.0.1')
+    chroma_port = int(os.getenv('CHROMA_PORT', '8000'))
+
+    # 行内风控规则引擎
+    risk_engine_url = os.getenv('RISK_ENGINE_URL', 'http://risk-engine.internal')
+    risk_engine_api_key = os.getenv('RISK_ENGINE_API_KEY', '')
 
 
 config_map = {

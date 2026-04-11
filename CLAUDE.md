@@ -15,6 +15,7 @@ src/
 ## 路由风格
 - 禁止使用 RESTful 斜杠风格
 - 优先采用点号命名法（`/auth.token`、`/task.list`）
+- 所有路由统一使用 POST 方法，禁止使用 GET
 
 ## 任务调度
 - 采用 Huey，定义在各 domain 的 `tasks.py`
@@ -23,7 +24,7 @@ src/
 ## domain 职责
 - `repository.py`：只负责 SQL，接收 `conn`，不抛业务异常
 - `service.py`：业务逻辑，调 repository，做业务判断
-- `views.py`：解析请求参数，调 service，返回响应
+- `views.py`：解析请求参数，调 service，返回响应；JSON body 统一使用 `serial.from_json(await request.body())` 解析，禁止使用 `await request.json()`
 
 ## 响应格式
 - 业务成功使用 `ok(data)` 返回 `{"code": 0, "msg": "success", "data": ...}`
@@ -38,6 +39,11 @@ src/
 - `db_threadpool`：数据库阻塞 IO 专用
 - `bio_threadpool`：其他阻塞 IO
 
+## 异步 IO 规范
+- HTTP 客户端统一使用 `httpx` 异步调用，禁止使用 `requests`
+- 数据库操作保持同步 SQLAlchemy + `db_threadpool` offload，禁止使用异步 MySQL 驱动（如 aiomysql）
+- 原因：异步 MySQL 驱动缺乏维护、稳定性差；`httpx` 则是活跃且稳定的项目，原生支持 async/await，无需线程池中转
+
 ## 追踪机制
 - 每个请求/任务都有 `run_id`，通过 `ContextVar` 传递，统一注入日志
 
@@ -51,6 +57,7 @@ src/
 - 禁止使用 global 和 nonlocal
 - 字符串格式化优先使用 f-string
 - 布尔值判断禁止使用 == True / == False，直接使用变量或 not
+- 从序列中按名称提取元素时，优先使用解包而非硬编码下标（如 `first, *rest = items` 或 `a, b = pair`），避免 `items[0]`、`items[1]` 这类写法
 
 ## Web框架规范
 - Web 框架使用 Starlette 1.0.0 版本
