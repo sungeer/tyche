@@ -40,7 +40,7 @@ class JWTAuthBackend(AuthenticationBackend):
             raise AuthenticationError(e.msg)
         except TokenInvalidError as e:
             logger.warning(f'[JWT] Token 非法，path={conn.url.path}，reason={str(e)}')
-            raise AuthenticationError(e.msg)
+            raise AuthenticationError(e.msg)  # 该异常 调用 on_auth_error()
         except Exception:
             logger.warning(f'[JWT] Token 解析失败，path={conn.url.path}')
             raise AuthenticationError('Invalid JWT token')  # 此处异常不会越出中间件
@@ -53,7 +53,7 @@ class JWTAuthBackend(AuthenticationBackend):
         return AuthCredentials(roles), JWTUser(user_id, username, roles)
 
 
-def on_auth_error(request, exc):
+def on_auth_error(request, exc):  # noqa
     return Response(
         {'code': 401, 'msg': str(exc), 'data': None},
         status_code=401,

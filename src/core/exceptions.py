@@ -22,6 +22,20 @@ class BadRequestError(AppError):
         self.msg = msg
 
 
+# 401
+class UnauthorizedError(AppError):
+
+    def __init__(self, msg='请先登录'):
+        self.msg = msg
+
+
+# 403
+class ForbiddenError(AppError):
+
+    def __init__(self, msg='无权限'):
+        self.msg = msg
+
+
 # JWT 已过期
 class TokenExpiredError(Exception):
 

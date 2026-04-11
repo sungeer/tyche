@@ -23,8 +23,10 @@ src/
 
 ## domain 职责
 - `repository.py`：只负责 SQL，接收 `conn`，不抛业务异常
-- `service.py`：业务逻辑，调 repository，做业务判断
+- `service.py`：业务逻辑，调 repository，做业务判断；资源不存在、状态非法等业务语义判断必须在此层抛出对应异常
 - `views.py`：解析请求参数，调 service，返回响应；JSON body 统一使用 `serial.from_json(await request.body())` 解析，禁止使用 `await request.json()`
+  - 只做请求边界的参数格式校验（如必填字段缺失时抛 `BadRequestError`）
+  - 禁止对 Service 返回值做业务判断（如 `if not result` 后抛异常），业务语义由 Service 负责
 
 ## 响应格式
 - 业务成功使用 `ok(data)` 返回 `{"code": 0, "msg": "success", "data": ...}`
@@ -34,6 +36,12 @@ src/
 - `BusinessError` — 业务失败，HTTP 200 + 非零 code
 - `BadRequestError` — 参数错误，HTTP 400
 - `TokenExpiredError` / `TokenInvalidError` — JWT 问题，HTTP 401
+
+## HTTP 状态码规范
+- `fail()` 专用于业务失败，HTTP 状态码始终为 200，禁止用它返回 4xx/5xx
+- 未登录（401）：使用 `@requires('authenticated', status_code=401)` 装饰器，禁止用 `fail(401, ...)`
+- 无权限（403）：使用 `raise HTTPException(status_code=403, detail='...')` 或 `@requires(scope, status_code=403)`，禁止用 `fail(403, ...)`
+- 401 和 403 均有对应的全局 handler（`auth_error` / `forbidden_error`），会统一返回标准 JSON 格式
 
 ## 线程池命名语义
 - `db_threadpool`：数据库阻塞 IO 专用
