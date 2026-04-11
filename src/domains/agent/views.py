@@ -1,13 +1,3 @@
-"""
-Agent HTTP 端点（全部使用 POST）
-/agent.chat           POST  多轮对话（SSE 流式）
-/agent.task.status    POST  查询任务状态
-/agent.review.list    POST  查看待审核任务（审核人用）
-/agent.review.approve POST  审核通过
-/agent.review.reject  POST  审核驳回
-/agent.session.clear  POST  清除会话上下文
-/agent.metrics        POST  系统指标（仅 ADMIN）
-"""
 import asyncio
 import json
 
@@ -18,7 +8,7 @@ from src.core.exceptions import BadRequestError
 from src.core.response import ok
 from src.domains.agent import service, pipeline
 from src.domains.agent.state import make_initial_state
-from src.core.auth import login_required
+from src.core.auth import login_required, permission_required
 from src.utils import serial
 
 
@@ -90,12 +80,9 @@ async def chat(request):
     )
 
 
-# 查询任务状态
+# 查询 任务状态 用于轮询人工审核结果
 @login_required
 async def task_status(request):
-    """查询任务状态
-    用于轮询人工审核结果
-    """
     body = serial.from_json(await request.body())
     task_id = (body.get('task_id') or '').strip()
     if not task_id:
@@ -105,16 +92,16 @@ async def task_status(request):
     return ok(result)
 
 
+# 查询 当前用户角色的 待 审核任务列表
 @login_required
 async def review_list(request):
-    """查询当前用户角色的待审核任务列表"""
     tasks = await service.get_review_list(request.user.roles)
     return ok({'tasks': tasks, 'total': len(tasks)})
 
 
+# 审核通过
 @login_required
 async def review_approve(request):
-    """审核通过"""
     user = request.user
 
     body = serial.from_json(await request.body())
@@ -138,9 +125,9 @@ async def review_approve(request):
     })
 
 
+# 审核驳回
 @login_required
 async def review_reject(request):
-    """审核驳回"""
     user = request.user
 
     body = serial.from_json(await request.body())
@@ -162,9 +149,9 @@ async def review_reject(request):
     return ok({'task_id': task_id, 'message': '审核已驳回，申请人将收到通知'})
 
 
+# 用户主动 清除 会话上下文
 @login_required
 async def session_clear(request):
-    """用户主动清除会话上下文"""
     user = request.user
 
     body = serial.from_json(await request.body())
@@ -176,11 +163,8 @@ async def session_clear(request):
     return ok({'message': '会话上下文已清除，下次对话将开启新会话'})
 
 
-@login_required
-async def metrics(request):
-    """
-    系统指标接口（仅 skill:manage 权限）。
-    返回近 24h 各节点 P95 耗时、错误率、Skill 调用分布。
-    """
-    data = await service.get_metrics(request.user.roles, since_hours=24)
+# 系统指标接口 仅 skill:manage 权限
+@permission_required('skill:manage')
+async def metrics(request):  # noqa
+    data = await service.get_metrics(since_hours=24)
     return ok(data)

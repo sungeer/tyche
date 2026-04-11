@@ -24,8 +24,6 @@ _MAX_MESSAGES = 40
 # 具备审核权限的角色
 _REVIEW_ROLES = ('COMPLIANCE', 'RISK_OFFICER', 'ADMIN')
 
-# 具备系统指标查看权限的 scope
-_METRICS_SCOPE = 'skill:manage'
 
 
 def _now_utc():
@@ -225,17 +223,14 @@ def _p95(values):
     return sorted(values)[min(idx, len(values) - 1)]
 
 
-async def get_metrics(user_roles, since_hours=24):
+async def get_metrics(since_hours=24):
     """
     计算近 N 小时的系统指标：
       - 各节点 P95 耗时（ms）
       - 请求总量与错误率
       - Skill 调用分布
       - 意图分布
-    无 skill:manage 权限时抛出 ForbiddenError。
     """
-    if _METRICS_SCOPE not in user_roles:
-        raise ForbiddenError('无权访问系统指标，需要 skill:manage 权限')
     since_dt = (_now_utc() - timedelta(hours=since_hours)).strftime('%Y-%m-%d %H:%M:%S')
 
     def run_sync():
