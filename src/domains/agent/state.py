@@ -11,43 +11,46 @@ def now_utc():
 # 构建 AgentState 初始值
 def make_initial_state(message, user, session, history):
     return {
-        # 输入域 只读 Pipeline 入口写入 节点不得修改
+
+        # 输入域 只读 pipeline 入口写入 节点不得修改
         'input': {
-            'session_id': session['session_id'],
-            'turn_id': uuid.uuid4().hex,
-            'run_id': run_id_var.get('-'),
+            'session_id': session['session_id'],  # 当前会话 ID
+            'turn_id': uuid.uuid4().hex,  # 本轮对话唯一 ID 用于关联消息和审计
+            'run_id': run_id_var.get('-'),  # 请求级追踪 ID 用于日志追踪
             'user': {
-                'user_id': user.user_id,
+                'user_id': user.user_id,  # 当前登录用户 ID
                 'username': user.username,
-                'roles': user.roles,
-                # JWT 中暂无以下字段，默认空字符串
-                'risk_clearance': getattr(user, 'risk_clearance', ''),
-                'department': getattr(user, 'department', ''),
+                'roles': user.roles,  # 用户角色 列表 Node2 权限检查的依据
+                'risk_clearance': getattr(user, 'risk_clearance', ''),  # 风险许可等级 JWT 暂无
+                'department': getattr(user, 'department', ''),  # 所属部门 JWT 暂无
             },
-            'message': message,
-            'history': history,
-            'received_at': now_utc(),
+            'message': message,  # 用户本轮输入的原始文本
+            'history': history,  # 会话历史消息 [{'role': 'user'/'assistant', 'content': '...'}]
+            'received_at': now_utc(),  # 请求接收时间 用于审计和耗时计算
         },
+
         # 工作域 各节点依次填充
         'working': {
-            'intent': None,
-            'route': None,
-            'skill_results': [],
-            'knowledge_chunks': [],
-            'response': None,
+            'intent': None,  # 意图识别的 LLM 结构化输出
+            'route': None,  # 合规检查结果 + Skill 路由决策
+            'skill_results': [],  # 所有 Skill 执行结果的列表
+            'knowledge_chunks': [],  # RAG 检索返回的知识库片段列表
+            'response': None,  # 最终返回给用户的完整响应
         },
+
         # 审计域 只追加，不修改已有条目
         'audit': {
-            'node_traces': [],
-            'compliance_events': [],
-            'llm_calls': [],
+            'node_traces': [],  # 记录每个节点的执行轨迹
+            'compliance_events': [],  # 合规检查触发的事件列表
+            'llm_calls': [],  # 每次 LLM 调用的记录
         },
+
         # 控制域 流程控制信号
         'control': {
-            'current_node': None,
-            'status': 'running',
-            'short_circuit_reason': None,
-            'error': None,
+            'current_node': None,  # 当前正在执行的节点名 用于异常定位
+            'status': 'running',  # 流程最终状态
+            'short_circuit_reason': None,  # 短路原因
+            'error': None,  # 未捕获异常时写入
         },
     }
 

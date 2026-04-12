@@ -32,12 +32,12 @@ async def chat(request):
 
     # SSE token 队列 Pipeline 向此推送事件
     token_queue = asyncio.Queue()
-    state['_sse_queue'] = token_queue
+    state['sse_queue'] = token_queue
 
-    # Pipeline 作为后台任务并发运行
+    # pipeline 作为后台任务 并发运行
     async def run_pipeline_and_save():
         completed_state = await pipeline.run(state)
-        # Pipeline 完成后，异步保存本轮消息
+        # pipeline 完成后，异步保存本轮消息
         try:
             response = completed_state['working'].get('response')
             assistant_text = response['text'] if response else None
@@ -58,18 +58,18 @@ async def chat(request):
             event = await token_queue.get()
             if event is None:
                 break
-            yield f'event: {event["event"]}\ndata: {json.dumps(event["data"], ensure_ascii=False)}\n\n'
+            msg_type = event['event']
+            msg_content = event['data']
+            yield f'event: {msg_type}\ndata: {serial.to_json(msg_content)}\n\n'
 
-    return StreamingResponse(
-        event_generator(),
-        media_type='text/event-stream',
-        headers={
-            'X-Run-Id': state['input']['run_id'],
-            'X-Turn-Id': state['input']['turn_id'],
-            'X-Session-Id': state['input']['session_id'],
-            'Cache-Control': 'no-cache',
-        },
-    )
+    headers = {
+        'X-Run-Id': state['input']['run_id'],
+        'X-Turn-Id': state['input']['turn_id'],
+        'X-Session-Id': state['input']['session_id'],
+        'Cache-Control': 'no-cache',
+    }
+
+    return StreamingResponse(event_generator(), media_type='text/event-stream', headers=headers)
 
 
 # 查询 任务状态 用于轮询人工审核结果

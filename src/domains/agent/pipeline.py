@@ -25,17 +25,17 @@ async def run(state):
         state['control']['current_node'] = 'node1'
         state = await node1_intent_parser.run(state)
 
-        # 分支：闲聊 / 超出范围 → 直接截断，不写审计
+        # 分支 闲聊或超出范围 直接截断 不写审计
         if _should_short_circuit(state):
-            state['control']['status'] = 'short_circuited'
-            state['control']['short_circuit_reason'] = state['working']['intent']['category']
-            _push_short_circuit_response(state)
+            state['control']['status'] = 'short_circuited'  # 意图短路
+            state['control']['short_circuit_reason'] = state['working']['intent']['category']  # 短路原因
+            _push_short_circuit_response(state)  # 礼貌提示
             return state
 
-        # 分支：意图不明确 → 返回澄清问题
+        # 分支 意图不明确 返回澄清问题
         if state['working']['intent']['needs_clarification']:
-            state['control']['status'] = 'completed'
-            _push_working_response(state)
+            state['control']['status'] = 'completed'  # 正常完成
+            _push_working_response(state)  # 将 working.response.text 推送到 SSE
             return state
 
         # ── Node2：合规拦截 + Skill 路由 ─────────────────────
@@ -59,7 +59,7 @@ async def run(state):
                 assign_to_role=review_info['assign_to_role'],
                 sla_hours=review_info['sla_hours'],
             )
-            state['_review_task_id'] = task_id
+            state['review_task_id'] = task_id  # 人工审核任务创建后写入 供 pipeline 后续流转识别
             _push_pending_review(state, task_id, review_info['sla_hours'])
             asyncio.create_task(node5_audit_writer.run(state))
             return state
@@ -138,8 +138,8 @@ async def resume_from_node3(state):
 
 # ==================== 辅助函数 ====================
 
+# 意图 闲聊或超出范围
 def _should_short_circuit(state):
-    """意图为闲聊或超出范围时，在 Node1 直接截断"""
     category = state['working']['intent']['category']
     return category in ('small_talk', 'out_of_scope')
 
@@ -157,11 +157,11 @@ def _is_critical_failure(state):
 
 
 def _get_queue(state):
-    return state.get('_sse_queue')
+    return state.get('sse_queue')
 
 
+# 将 working.response.text 推送到 SSE
 def _push_working_response(state):
-    """将 working.response.text 推送到 SSE"""
     queue = _get_queue(state)
     if not queue:
         return
@@ -170,8 +170,8 @@ def _push_working_response(state):
         queue.put_nowait({'event': 'token', 'data': {'text': response['text']}})
 
 
+# 闲聊或超出范围的 礼貌提示
 def _push_short_circuit_response(state):
-    """闲聊/超出范围的礼貌提示"""
     queue = _get_queue(state)
     if not queue:
         return
@@ -180,7 +180,7 @@ def _push_short_circuit_response(state):
         text = '您好！我是银行投资理财助手，专注于产品查询、持仓分析、风险评估等专业服务，暂时无法处理闲聊话题，请问有什么理财方面的问题需要帮助？'
     else:
         text = '抱歉，您的请求超出了系统当前的服务范围。如需帮助，请联系相关业务部门。'
-    queue.put_nowait({'event': 'token', 'data': {'text': text}})
+    queue.put_nowait({'event': 'token', 'data': {'text': text}})  # 推送 SSE 事件
 
 
 def _push_pending_review(state, task_id, sla_hours):

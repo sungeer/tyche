@@ -142,7 +142,7 @@ async def run(state):
     knowledge_chunks = state['working']['knowledge_chunks']
     history = state['input']['history']
     message = state['input']['message']
-    sse_queue = state.get('_sse_queue')
+    sse_queue = state.get('sse_queue')
 
     try:
         # 所有 Skill 均无数据时，直接返回固定文案（FR-044）
@@ -154,6 +154,7 @@ async def run(state):
                 'token_usage': {},
             }
             if sse_queue:
+                # 推送 SSE 事件 给 event_generator() 消费
                 sse_queue.put_nowait({'event': 'token', 'data': {'text': fixed_msg}})
             append_node_trace(state, 'node4_response_synthesizer', started_at, 'ok', '所有 Skill 无数据，返回固定文案')
             return state
