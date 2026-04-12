@@ -15,14 +15,6 @@ from src.utils import serial
 # 多轮对话 SSE 流式
 @login_required
 async def chat(request):
-    """
-    多轮对话接口 SSE 流式
-    1. 解析请求
-    2. 加载/创建会话
-    3. 构建初始 AgentState
-    4. 将 Pipeline 作为后台任务运行
-    5. 通过 StreamingResponse + asyncio.Queue 流式返回 SSE
-    """
     body = serial.from_json(await request.body())
     message = (body.get('message') or '').strip()
     session_id = body.get('session_id') or ''
@@ -38,7 +30,7 @@ async def chat(request):
     # 构建初始 AgentState
     state = make_initial_state(message=message, user=user, session=session, history=history)
 
-    # SSE token 队列：Pipeline 向此推送事件，event_generator 读取并返回
+    # SSE token 队列 Pipeline 向此推送事件
     token_queue = asyncio.Queue()
     state['_sse_queue'] = token_queue
 

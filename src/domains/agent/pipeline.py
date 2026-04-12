@@ -18,12 +18,8 @@ from src.domains.agent import review_persistence
 from src.domains.agent.skill_registry import SKILL_REGISTRY
 
 
+# Pipeline 主入口 依次执行各节点
 async def run(state):
-    """
-    Pipeline 主入口。
-    接收初始 state，依次执行各节点，返回最终 state。
-    SSE token 通过 state['_sse_queue'] 传递给 View 层。
-    """
     try:
         # ── Node1：意图识别 ──────────────────────────────────
         state['control']['current_node'] = 'node1'

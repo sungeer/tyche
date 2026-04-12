@@ -21,8 +21,8 @@ def _build_headers():
     }
 
 
+# 非流式 LLM 调用
 async def chat_completion(messages, json_mode=False, timeout=30):
-    """非流式 LLM 调用"""
     payload = {
         'model': _MODEL_NAME,
         'messages': messages,
@@ -31,9 +31,11 @@ async def chat_completion(messages, json_mode=False, timeout=30):
     if json_mode:
         payload['response_format'] = {'type': 'json_object'}
 
+    url = f'{settings.llm_base_url}/v1/chat/completions'
+
     async with httpx.AsyncClient() as client:
         resp = await client.post(
-            f'{settings.llm_base_url}/v1/chat/completions',
+            url,
             json=payload,
             headers=_build_headers(),
             timeout=timeout,
@@ -42,6 +44,7 @@ async def chat_completion(messages, json_mode=False, timeout=30):
         return resp.json()
 
 
+# 流式 LLM 调用
 async def stream_chat_completion(messages, sse_queue, timeout=60):
     """
     流式 LLM 调用。

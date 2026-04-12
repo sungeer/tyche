@@ -13,7 +13,7 @@ from src.domains.agent import llm
 from src.domains.agent.state import (
     append_node_trace,
     append_llm_call,
-    _now_utc,
+    now_utc,
 )
 
 # 合法的意图类别（用于校验 LLM 返回值）
@@ -70,11 +70,10 @@ _SYSTEM_PROMPT = '''你是银行投资理财助手的意图分析模块。
 '''
 
 
-def _build_messages(history, message):
-    """将历史记录和本次消息拼装为 LLM messages 格式"""
+def build_messages(history, message):
     messages = [{'role': 'system', 'content': _SYSTEM_PROMPT}]
 
-    # 加入历史（最近 10 轮，20 条消息）
+    # 加入历史 最近 10 轮
     for item in history[-20:]:
         messages.append({'role': item['role'], 'content': item['content']})
 
@@ -82,14 +81,10 @@ def _build_messages(history, message):
     return messages
 
 
-def _parse_llm_response(raw_text):
-    """
-    解析 LLM 返回的 JSON 字符串。
-    失败时返回 None。
-    """
+def parse_llm_response(raw_text):
     try:
         data = json.loads(raw_text)
-        # 校验必填字段
+        # 校验 必填字段
         if data.get('category') not in _VALID_CATEGORIES:
             return None
         if not isinstance(data.get('confidence'), (int, float)):
@@ -99,26 +94,27 @@ def _parse_llm_response(raw_text):
         return None
 
 
+# Node1 入口 意图识别
 async def run(state):
-    """Node1 入口：意图识别"""
-    started_at = _now_utc()
+    started_at = now_utc()
     t0 = time.monotonic()
 
     try:
-        messages = _build_messages(
+        # 将历史记录和本次消息拼装为 LLM messages 格式
+        messages = build_messages(
             state['input']['history'],
             state['input']['message'],
         )
 
-        # 第一次调用
+        # 第一次调用 非流式
         resp = await llm.chat_completion(messages, json_mode=True, timeout=_LLM_TIMEOUT)
         raw_text = resp['choices'][0]['message']['content']
         usage = resp.get('usage', {})
         duration_ms = int((time.monotonic() - t0) * 1000)
 
-        intent = _parse_llm_response(raw_text)
+        intent = parse_llm_response(raw_text)  # 解析 LLM 返回的 JSON 字符串
 
-        # 解析失败时重试一次
+        # 解析 失败时 重试一次
         if intent is None:
             logger.warning(f'[Node1] 首次 JSON 解析失败，重试。raw={raw_text[:200]}')
             t0 = time.monotonic()
@@ -126,13 +122,13 @@ async def run(state):
             raw_text = resp['choices'][0]['message']['content']
             usage = resp.get('usage', {})
             duration_ms = int((time.monotonic() - t0) * 1000)
-            intent = _parse_llm_response(raw_text)
+            intent = parse_llm_response(raw_text)
 
+        # 重试 仍失败
         if intent is None:
-            # 两次解析均失败，降级为 ambiguous
             logger.error(f'[Node1] 意图解析两次均失败，降级为 ambiguous')
             intent = {
-                'category': 'ambiguous',
+                'category': 'ambiguous',  # 降级为 ambiguous
                 'sub_intent': '',
                 'entities': {},
                 'confidence': 0.0,
@@ -140,17 +136,17 @@ async def run(state):
                 'clarification_question': '抱歉，我没有理解您的问题，能否换一种表达方式？',
             }
 
-        # 补充 LLM 原始输出（供审计）
+        # 补充 LLM 原始输出 供审计
         intent['llm_raw_output'] = raw_text
 
-        # 处理置信度分层（FR-011）
+        # 处理 置信度 分层 FR-011
         confidence = float(intent.get('confidence', 0))
         if 0.6 <= confidence < 0.85:
-            # 低置信度但仍执行：将注释写入 sub_intent
+            # 低 置信度 但仍执行 将注释写入 sub_intent
             category_label = intent.get('category', '')
-            intent['low_confidence_note'] = f'已按"{category_label}"理解，如有偏差请澄清'
+            intent['low_confidence_note'] = f'已按[{category_label}]理解，如有偏差请澄清'
 
-        # 意图不明确时写入 response（Node1 唯一能写 response 的场景）
+        # 意图不明确时 写入 response
         if intent.get('needs_clarification'):
             state['working']['response'] = {
                 'text': intent.get('clarification_question', '请问您具体想查询什么？'),
@@ -167,6 +163,7 @@ async def run(state):
 
         state['working']['intent'] = intent
 
+        # 追加 LLM 调用记录 到 audit.llm_calls
         append_llm_call(
             state,
             node_name='node1_intent_parser',
@@ -175,6 +172,7 @@ async def run(state):
             completion_tokens=usage.get('completion_tokens', 0),
             duration_ms=duration_ms,
         )
+        # 追加节点 执行轨迹 到 audit.node_traces
         append_node_trace(state, 'node1_intent_parser', started_at, 'ok',
                           f'意图={intent["category"]}, 置信度={intent.get("confidence")}')
 
