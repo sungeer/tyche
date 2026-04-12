@@ -1,7 +1,3 @@
-"""
-Agent 领域 SQL 操作层
-只负责 SQL，接收 conn，不包含业务逻辑。
-"""
 import json
 from datetime import datetime, timezone
 
@@ -31,8 +27,8 @@ def create_session(conn, session_id, user_id):
     conn.execute(sql, {'session_id': session_id, 'user_id': user_id, 'now': now})
 
 
+# 按 session_id 查询会话
 def get_session_by_id(conn, session_id):
-    """按 session_id 查询会话"""
     sql = text('''
         SELECT
             id, session_id, user_id, status, turn_count,
@@ -79,8 +75,8 @@ def close_session(conn, session_id):
 
 # ==================== 消息 ====================
 
+# 查询 指定轮次 的助手 回复消息
 def get_assistant_message_by_turn_id(conn, turn_id):
-    """查询指定轮次的助手回复消息"""
     sql = text('''
         SELECT
             id, session_id, turn_id, role, content, created_at
@@ -292,8 +288,8 @@ def insert_review_task(conn, task):
     })
 
 
+# 按 task_id 查询 审核任务
 def get_review_task(conn, task_id):
-    """按 task_id 查询审核任务"""
     sql = text('''
         SELECT
             id, task_id, turn_id, user_id, assigned_role, assigned_to,

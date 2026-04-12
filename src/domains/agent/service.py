@@ -118,10 +118,8 @@ async def save_turn_messages(session_id, turn_id, user_message, assistant_respon
     await run_in_threadpool(db_threadpool, run_sync)
 
 
+# 用户 主动 清除 会话上下文 关闭当前会话
 async def clear_session(user_id, session_id):
-    """用户主动清除会话上下文，关闭当前会话
-    会话不存在或不属于该用户时抛出 BadRequestError。
-    """
     def run_sync():
         with engine.begin() as conn:
             session = repository.get_session_by_id(conn, session_id)
@@ -131,10 +129,12 @@ async def clear_session(user_id, session_id):
             return True
 
     success = await run_in_threadpool(db_threadpool, run_sync)
+    # 会话不存在或不属于该用户时抛出 BadRequestError
     if not success:
         raise BadRequestError('会话不存在或无权操作')
 
 
+# 查询 审核 任务状态
 async def get_task_status(task_id):
     """
     查询审核任务状态。
@@ -223,14 +223,8 @@ def _p95(values):
     return sorted(values)[min(idx, len(values) - 1)]
 
 
+# 系统指标 计算近 N 小时
 async def get_metrics(since_hours=24):
-    """
-    计算近 N 小时的系统指标：
-      - 各节点 P95 耗时（ms）
-      - 请求总量与错误率
-      - Skill 调用分布
-      - 意图分布
-    """
     since_dt = (_now_utc() - timedelta(hours=since_hours)).strftime('%Y-%m-%d %H:%M:%S')
 
     def run_sync():
@@ -253,7 +247,7 @@ async def get_metrics(since_hours=24):
     # 错误率
     error_count = sum(1 for log in logs if log['final_status'] in ('failed', 'error'))
 
-    # 各节点耗时收集
+    # 各节点 P95 耗时 ms
     node_durations_map = defaultdict(list)
     for log in logs:
         durations = json.loads(log['node_durations'] or '{}')
