@@ -51,6 +51,7 @@ def _is_session_expired(session):
     return delta > timedelta(hours=_SESSION_IDLE_TIMEOUT_HOURS)
 
 
+# 加载或创建会话
 async def load_or_create_session(user_id, session_id):
     """
     加载现有会话，或在以下情况创建新会话：
@@ -58,7 +59,7 @@ async def load_or_create_session(user_id, session_id):
       - session_id 对应的会话不存在
       - 会话已超时（空闲 > 4 小时）
       - 会话已关闭
-    返回 (session_dict, history_list)。
+    返回 (session_dict, history_list)
     """
     new_session_id = session_id
 

@@ -32,7 +32,7 @@ async def chat(request):
 
     user = request.user
 
-    # 加载或创建会话，获取历史消息
+    # 加载或创建会话 获取历史消息
     session, history = await service.load_or_create_session(user.user_id, session_id)
 
     # 构建初始 AgentState
