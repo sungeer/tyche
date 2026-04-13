@@ -32,7 +32,7 @@ def make_initial_state(message, user, session, history):
         # 工作域 各节点依次填充
         'working': {
             'intent': None,  # 意图识别的 LLM 结构化输出
-            'route': None,  # 合规检查结果 + Skill 路由决策
+            'route': None,  # 合规检查结果 与 Skill 路由决策
             'skill_results': [],  # 所有 Skill 执行结果的列表
             'knowledge_chunks': [],  # RAG 检索返回的知识库片段列表
             'response': None,  # 最终返回给用户的完整响应
@@ -51,6 +51,7 @@ def make_initial_state(message, user, session, history):
             'status': 'running',  # 流程最终状态
             'short_circuit_reason': None,  # 短路原因
             'error': None,  # 未捕获异常时写入
+            'review_task_id': None,  # 触发人工审核后写入审核任务 ID；未触发时为 None
         },
     }
 

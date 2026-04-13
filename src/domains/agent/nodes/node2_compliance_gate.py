@@ -27,7 +27,7 @@ from src.domains.agent.skill_registry import SKILL_REGISTRY
 from src.domains.agent.state import (
     append_node_trace,
     append_compliance_event,
-    _now_utc,
+    now_utc,
 )
 
 # 涉及客户-产品匹配度检查的意图（需做风险等级合规检查）
@@ -173,7 +173,7 @@ def _to_float(val):
 
 async def run(state):
     """Node2 入口：合规拦截 + Skill 路由"""
-    started_at = _now_utc()
+    started_at = now_utc()
     t0 = time.monotonic()
 
     user = state['input']['user']

@@ -133,7 +133,7 @@ def _all_skills_empty(skill_results):
     return True
 
 
-async def run(state):
+async def run(state, sse_queue=None):
     """Node4 入口：LLM 响应合成（SSE 流式）"""
     started_at = _now_utc()
     t0 = time.monotonic()
@@ -142,7 +142,6 @@ async def run(state):
     knowledge_chunks = state['working']['knowledge_chunks']
     history = state['input']['history']
     message = state['input']['message']
-    sse_queue = state.get('sse_queue')
 
     try:
         # 所有 Skill 均无数据时，直接返回固定文案（FR-044）

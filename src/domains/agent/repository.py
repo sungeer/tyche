@@ -376,3 +376,62 @@ def get_state_snapshot(conn, task_id):
     result = conn.execute(sql, {'task_id': task_id})
     row = result.mappings().first()
     return dict(row) if row else None
+
+
+# ==================== 工作流追踪 ====================
+
+def insert_workflow_run(conn, turn_id, session_id, user_id):
+    """创建工作流执行记录，Pipeline 启动时调用"""
+    now = _now_utc()
+    sql = text('''
+        INSERT INTO workflow_run (
+            turn_id, session_id, user_id, status, created_at, updated_at
+        )
+        VALUES (
+            :turn_id, :session_id, :user_id, 'running', :now, :now
+        )
+    ''')
+    conn.execute(sql, {
+        'turn_id': turn_id,
+        'session_id': session_id,
+        'user_id': user_id,
+        'now': now,
+    })
+
+
+def update_workflow_run_status(conn, turn_id, status):
+    """更新工作流最终状态，Pipeline 结束时调用"""
+    now = _now_utc()
+    sql = text('''
+        UPDATE workflow_run
+        SET
+            status = :status,
+            updated_at = :now
+        WHERE
+            turn_id = :turn_id
+    ''')
+    conn.execute(sql, {'turn_id': turn_id, 'status': status, 'now': now})
+
+
+def insert_workflow_step(conn, step):
+    """写入节点执行步骤记录，每个节点完成后立即调用"""
+    sql = text('''
+        INSERT INTO workflow_step (
+            turn_id, node_name, status, output_json,
+            error_msg, started_at, ended_at, duration_ms
+        )
+        VALUES (
+            :turn_id, :node_name, :status, :output_json,
+            :error_msg, :started_at, :ended_at, :duration_ms
+        )
+    ''')
+    conn.execute(sql, {
+        'turn_id': step['turn_id'],
+        'node_name': step['node_name'],
+        'status': step['status'],
+        'output_json': step['output_json'],
+        'error_msg': step['error_msg'],
+        'started_at': step['started_at'],
+        'ended_at': step['ended_at'],
+        'duration_ms': step['duration_ms'],
+    })

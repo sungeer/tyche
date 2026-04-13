@@ -34,9 +34,7 @@ async def save_state_for_review(state, rule_id, assign_to_role, sla_hours):
     sla_deadline = (_now_utc() + timedelta(hours=sla_hours)).strftime('%Y-%m-%d %H:%M:%S.000')
     trigger_detail = state['working']['route']['human_review'].get('reason', '')
 
-    # 序列化时排除临时字段（以 _ 开头的字段均为临时字段）
-    state_to_save = {k: v for k, v in state.items() if not k.startswith('_')}
-    state_json = json.dumps(state_to_save, ensure_ascii=False, default=str)
+    state_json = json.dumps(state, ensure_ascii=False, default=str)
 
     def run_sync():
         with engine.begin() as conn:

@@ -30,14 +30,13 @@ async def chat(request):
     # 构建初始 AgentState
     state = make_initial_state(message=message, user=user, session=session, history=history)
 
-    # SSE token 队列 Pipeline 向此推送事件
+    # SSE token 队列 Pipeline 向此推送事件；不注入 state，作为独立参数传入
     token_queue = asyncio.Queue()
-    state['sse_queue'] = token_queue
 
     # pipeline 作为后台任务 并发运行
     async def run_pipeline_and_save():
-        completed_state = await pipeline.run(state)
-        # pipeline 完成后，异步保存本轮消息
+        completed_state = await pipeline.run(state, sse_queue=token_queue)
+        # pipeline 完成后 异步保存本轮消息
         try:
             response = completed_state['working'].get('response')
             assistant_text = response['text'] if response else None
@@ -50,12 +49,12 @@ async def chat(request):
         except Exception as e:
             logger.error(f'[chat] 消息保存失败：{e}')
 
-    asyncio.create_task(run_pipeline_and_save())
+    asyncio.create_task(run_pipeline_and_save())  # 后台任务
 
     # SSE event generator
     async def event_generator():
         while True:
-            event = await token_queue.get()
+            event = await token_queue.get()  # 从队列消费
             if event is None:
                 break
             msg_type = event['event']
