@@ -5,6 +5,7 @@
 
 from datetime import datetime
 
+# OpenAI API 规范
 valid_roles = ('user', 'assistant', 'system', 'tool')
 
 
@@ -28,8 +29,8 @@ class Message:
 
         self.content = content
         self.role = role
-        self.timestamp = timestamp if timestamp is not None else datetime.now()
-        self.metadata = metadata if metadata is not None else {}
+        self.timestamp = timestamp if timestamp is not None else datetime.now()  # 用于日志记录
+        self.metadata = metadata if metadata is not None else {}  # 预留的功能扩展
 
     def to_dict(self):
         """转换为字典格式
