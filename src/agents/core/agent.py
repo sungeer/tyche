@@ -1,10 +1,10 @@
 """Agent 基类"""
 
 from abc import ABC, abstractmethod
-from typing import Optional
-from .message import Message
-from .llm import AgentsLLM
-from .config import Config
+
+from src.core.config import settings
+from src.agents.core.message import Message
+from src.agents.core.llm import AgentsLLM
 
 
 class Agent(ABC):
@@ -13,7 +13,7 @@ class Agent(ABC):
         self.name = name  # str
         self.llm = llm  # LLM 实例
         self.system_prompt = system_prompt  # 系统提示词 str
-        self.config = config or Config()
+        self.config = config or settings
         self._history = []  # 消息 历史记录
 
     # 运行 Agent

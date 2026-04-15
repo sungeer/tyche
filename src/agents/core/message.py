@@ -1,6 +1,6 @@
 """Agent 消息系统
-定义框架内统一的消息格式
-确保智能体与模型之间信息传递的标准化
+定义 框架内 统一 的 消息格式
+确保 智能体 与模型之间 信息传递的 标准化
 """
 
 from datetime import datetime
@@ -9,8 +9,8 @@ from datetime import datetime
 valid_roles = ('user', 'assistant', 'system', 'tool')
 
 
+# 消息类
 class Message:
-    """消息类"""
 
     def __init__(self, content, role, timestamp=None, metadata=None):
         if not isinstance(content, str):
