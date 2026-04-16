@@ -28,5 +28,7 @@ logs/*
 
 # 无需主动查看
 demos/
-docs/
 tests/
+README.md
+LICENSE
+.gitignore
