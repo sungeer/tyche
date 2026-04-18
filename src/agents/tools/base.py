@@ -36,6 +36,7 @@ def tool_action(name: str = None, description: str = None):
     return decorator
 
 
+# 工具参数定义
 class ToolParameter(BaseModel):
     """工具参数定义"""
     name: str
@@ -57,26 +58,38 @@ class Tool(ABC):
     - 使用 @tool_action 装饰器自动生成（推荐）
     """
 
-    def __init__(self, name: str, description: str, expandable: bool = False):
+    def __init__(self, name, description, expandable=False):
         """初始化工具
 
         Args:
-            name: 工具名称
-            description: 工具描述
-            expandable: 是否可展开为多个子工具
+            name: 工具名称 ''
+            description: 工具描述 ''
+            expandable: 是否可展开为多个子工具 bool
         """
         self.name = name
         self.description = description
         self.expandable = expandable
 
+    # 获取 工具参数定义
     @abstractmethod
-    def run(self, parameters: Dict[str, Any]) -> str:
-        """执行工具"""
+    def get_parameters(self):
+        """获取工具参数定义
+
+        tp = ToolParameter()
+        Output: [tp,]
+        """
         pass
 
+    # 执行工具
     @abstractmethod
-    def get_parameters(self) -> List[ToolParameter]:
-        """获取工具参数定义"""
+    def run(self, parameters):
+        """执行工具
+
+        Args:
+            parameters: {'a': 'wsx'}
+
+        Output: ''
+        """
         pass
 
     def get_expanded_tools(self) -> Optional[List['Tool']]:

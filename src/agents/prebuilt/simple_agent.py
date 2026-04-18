@@ -32,12 +32,12 @@ class SimpleAgent(Agent):
         初始化SimpleAgent
 
         Args:
-            name: Agent名称
-            llm: LLM实例
+            name: Agent 名称
+            llm: LLM 实例
             system_prompt: 系统提示词
             config: 配置对象
             tool_registry: 工具注册表（可选，如果提供则启用工具调用）
-            enable_tool_calling: 是否启用工具调用（只有在提供tool_registry时生效）
+            enable_tool_calling: 是否启用工具调用（只有在提供 tool_registry 时生效）
         """
         super().__init__(name, llm, system_prompt, config)
         self.tool_registry = tool_registry
