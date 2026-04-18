@@ -7,120 +7,115 @@ from typing import List, Dict, Any, Optional
 from src.agents.tools.registry import ToolRegistry
 
 
+# 工具链 支持多个工具的顺序执行
 class ToolChain:
-    """工具链 - 支持多个工具的顺序执行"""
 
-    def __init__(self, name: str, description: str):
-        self.name = name
-        self.description = description
-        self.steps: List[Dict[str, Any]] = []
+    def __init__(self, name, description):
+        self.name = name  # str
+        self.description = description  # str
+        self.steps = []
 
-    def add_step(self, tool_name: str, input_template: str, output_key: str = None):
+    # 添加 工具执行 步骤
+    def add_step(self, tool_name, input_template, output_key=None):
         """
-        添加工具执行步骤
-
         Args:
-            tool_name: 工具名称
-            input_template: 输入模板，支持变量替换，如 "{input}" 或 "{search_result}"
-            output_key: 输出结果的键名，用于后续步骤引用
+            tool_name: 工具名称 str
+            input_template: 输入模板，支持变量替换，如 '{input}' 或 '{search_result}'
+            output_key: 输出结果的键名，用于后续步骤引用 str
         """
         step = {
-            "tool_name": tool_name,
-            "input_template": input_template,
-            "output_key": output_key or f"step_{len(self.steps)}_result"
+            'tool_name': tool_name,
+            'input_template': input_template,
+            'output_key': output_key or f'step_{len(self.steps)}_result'
         }
         self.steps.append(step)
-        print(f"✅ 工具链 '{self.name}' 添加步骤: {tool_name}")
+        print(f'工具链 [{self.name}] 添加步骤: {tool_name}')
 
-    def execute(self, registry: ToolRegistry, input_data: str, context: Dict[str, Any] = None) -> str:
+    # 执行 工具链
+    def execute(self, registry, input_data, context=None):
         """
-        执行工具链
-
         Args:
-            registry: 工具注册表
-            input_data: 初始输入数据
-            context: 执行上下文，用于变量替换
+            registry: 工具注册表 ToolRegistry
+            input_data: 初始输入数据 str
+            context: 执行上下文，用于变量替换 dict
 
         Returns:
-            最终执行结果
+            最终执行结果 str
         """
         if not self.steps:
-            return "❌ 工具链为空，无法执行"
+            return '工具链为空，无法执行'
 
-        print(f"🚀 开始执行工具链: {self.name}")
+        print(f'开始执行工具链 [{self.name}]')
 
-        # 初始化上下文
+        # 初始化 上下文
         if context is None:
             context = {}
-        context["input"] = input_data
+        context['input'] = input_data
 
-        final_result = input_data
+        for i, step in enumerate(self.steps, 1):
+            tool_name = step['tool_name']
+            input_template = step['input_template']
+            output_key = step['output_key']
 
-        for i, step in enumerate(self.steps):
-            tool_name = step["tool_name"]
-            input_template = step["input_template"]
-            output_key = step["output_key"]
+            print(f'执行步骤 {i}/{len(self.steps)}: {tool_name}')
 
-            print(f"📝 执行步骤 {i + 1}/{len(self.steps)}: {tool_name}")
-
-            # 替换模板中的变量
+            # 替换 模板中的变量
             try:
                 actual_input = input_template.format(**context)
             except KeyError as e:
-                return f"❌ 模板变量替换失败: {e}"
+                return f'模板变量替换失败: {e}'
 
             # 执行工具
             try:
                 result = registry.execute_tool(tool_name, actual_input)
                 context[output_key] = result
-                final_result = result
-                print(f"✅ 步骤 {i + 1} 完成")
+                print(f'步骤 {i} 完成')
             except Exception as e:
-                return f"❌ 工具 '{tool_name}' 执行失败: {e}"
+                return f'工具 [{tool_name}] 执行失败: {e}'
 
-        print(f"🎉 工具链 '{self.name}' 执行完成")
+        # 返回 最后一步 的结果
+        final_result = context[self.steps[-1]['output_key']]
+        print(f'工具链 [{self.name}] 执行完成')
         return final_result
 
 
+# 工具链 管理器
 class ToolChainManager:
-    """工具链管理器"""
 
-    def __init__(self, registry: ToolRegistry):
-        self.registry = registry
-        self.chains: Dict[str, ToolChain] = {}
+    def __init__(self, registry):
+        self.registry = registry  # ToolRegistry
+        self.chains = {}  # ToolChain
 
-    def register_chain(self, chain: ToolChain):
-        """注册工具链"""
-        self.chains[chain.name] = chain
-        print(f"✅ 工具链 '{chain.name}' 已注册")
+    # 注册 工具链
+    def register_chain(self, chain):
+        self.chains[chain.name] = chain  # ToolChain
+        print(f'工具链 [{chain.name}] 已注册')
 
-    def execute_chain(self, chain_name: str, input_data: str, context: Dict[str, Any] = None) -> str:
-        """执行指定的工具链"""
+    # 执行 指定的 工具链
+    def execute_chain(self, chain_name, input_data, context=None):
         if chain_name not in self.chains:
-            return f"❌ 工具链 '{chain_name}' 不存在"
-
+            return f'工具链 [{chain_name}] 不存在'
         chain = self.chains[chain_name]
-        return chain.execute(self.registry, input_data, context)
+        return chain.execute(self.registry, input_data, context)  # str
 
-    def list_chains(self) -> List[str]:
-        """列出所有已注册的工具链"""
+    # 列出 所有 已注册的工具链
+    def list_chains(self):
         return list(self.chains.keys())
 
-    def get_chain_info(self, chain_name: str) -> Optional[Dict[str, Any]]:
-        """获取工具链信息"""
+    # 获取 工具链信息
+    def get_chain_info(self, chain_name):
         if chain_name not in self.chains:
             return None
-
         chain = self.chains[chain_name]
         return {
-            "name": chain.name,
-            "description": chain.description,
-            "steps": len(chain.steps),
-            "step_details": [
+            'name': chain.name,
+            'description': chain.description,
+            'steps': len(chain.steps),
+            'step_details': [
                 {
-                    "tool_name": step["tool_name"],
-                    "input_template": step["input_template"],
-                    "output_key": step["output_key"]
+                    'tool_name': step['tool_name'],
+                    'input_template': step['input_template'],
+                    'output_key': step['output_key']
                 }
                 for step in chain.steps
             ]
@@ -128,42 +123,42 @@ class ToolChainManager:
 
 
 # 便捷函数
-def create_research_chain() -> ToolChain:
+def create_research_chain():
     """创建一个研究工具链：搜索 -> 计算 -> 总结"""
     chain = ToolChain(
-        name="research_and_calculate",
-        description="搜索信息并进行相关计算"
+        name='research_and_calculate',
+        description='搜索信息并进行相关计算'
     )
 
     # 步骤1：搜索信息
     chain.add_step(
-        tool_name="search",
-        input_template="{input}",
-        output_key="search_result"
+        tool_name='search',
+        input_template='{input}',
+        output_key='search_result'
     )
 
     # 步骤2：基于搜索结果进行计算
     chain.add_step(
-        tool_name="my_calculator",
-        input_template="2 + 2",  # 简单的计算示例
-        output_key="calc_result"
+        tool_name='my_calculator',
+        input_template='2 + 2',  # 简单的计算示例
+        output_key='calc_result'
     )
 
-    return chain
+    return chain  # ToolChain
 
 
 def create_simple_chain() -> ToolChain:
     """创建一个简单的工具链示例"""
     chain = ToolChain(
-        name="simple_demo",
-        description="简单的工具链演示"
+        name='simple_demo',
+        description='简单的工具链演示'
     )
 
     # 只包含一个计算步骤
     chain.add_step(
-        tool_name="my_calculator",
-        input_template="{input}",
-        output_key="result"
+        tool_name='my_calculator',
+        input_template='{input}',
+        output_key='result'
     )
 
     return chain
