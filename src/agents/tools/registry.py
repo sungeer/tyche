@@ -2,10 +2,6 @@
 Agents 原生工具系统
 """
 
-from typing import Optional, Any, Callable
-
-from src.agents.tools.base import Tool
-
 
 class ToolRegistry:
     """Agents 工具注册表
@@ -16,8 +12,8 @@ class ToolRegistry:
     """
 
     def __init__(self):
-        self._tools: dict[str, Tool] = {}
-        self._functions: dict[str, dict[str, Any]] = {}
+        self._tools = {}
+        self._functions = {}
 
     # 注册Tool对象
     def register_tool(self, tool, auto_expand=True):
@@ -62,16 +58,16 @@ class ToolRegistry:
         }
         print(f'工具 [{name}] 已注册')
 
-    def unregister(self, name: str):
-        """注销工具"""
+    # 注销工具
+    def unregister(self, name):
         if name in self._tools:
             del self._tools[name]
-            print(f"🗑️ 工具 '{name}' 已注销。")
+            print(f'工具 [{name}] 已注销')
         elif name in self._functions:
             del self._functions[name]
-            print(f"🗑️ 工具 '{name}' 已注销。")
+            print(f'工具 [{name}] 已注销')
         else:
-            print(f"⚠️ 工具 '{name}' 不存在。")
+            print(f'工具 [{name}] 不存在')
 
     # 获取Tool对象
     def get_tool(self, name):

@@ -75,8 +75,8 @@ class Tool(ABC):
     def get_parameters(self):
         """获取工具参数定义
 
-        tp = ToolParameter()
-        Output: [tp,]
+        Returns:
+            [ToolParameter,]
         """
         pass
 
@@ -88,7 +88,8 @@ class Tool(ABC):
         Args:
             parameters: {'a': 'wsx'}
 
-        Output: ''
+        Returns:
+            字符串
         """
         pass
 
