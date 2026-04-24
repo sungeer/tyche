@@ -1,22 +1,7 @@
 from sqlalchemy import create_engine
+from sqlalchemy.engine import Engine, Connection
 
 from src.core.config import settings
-
-engine = create_engine(
-    settings.db_url,
-    echo=False,  # 不打印SQL语句
-    pool_size=5,  # 空闲连接 上限
-    max_overflow=7,  # 高峰额外最多再开 10 条
-    pool_timeout=30,  # 取连接等待 30s 失败就报错
-    pool_recycle=1800,  # 回收重连
-    pool_pre_ping=True,  # 避免拿到失效连接
-)
-
-
-
-from contextlib import contextmanager
-from sqlalchemy import create_engine
-from sqlalchemy.engine import Engine, Connection
 
 
 class _EngineHolder:
@@ -25,7 +10,6 @@ class _EngineHolder:
         self._engine: Engine | None = None
 
     def init(self):
-        from src.core.config import settings
         self._engine = create_engine(
             settings.db_url,
             echo=False,  # 不打印SQL语句
@@ -38,7 +22,7 @@ class _EngineHolder:
 
     def get(self) -> Engine:
         if self._engine is None:
-            raise RuntimeError('Engine not initialized.')
+            raise RuntimeError('engine not initialized')
         return self._engine
 
     def connect(self) -> Connection:
