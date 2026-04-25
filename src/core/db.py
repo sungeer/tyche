@@ -1,5 +1,4 @@
 from sqlalchemy import create_engine
-from sqlalchemy.engine import Engine, Connection
 
 from src.core.config import settings
 
@@ -7,7 +6,7 @@ from src.core.config import settings
 class _EngineHolder:
 
     def __init__(self):
-        self._engine: Engine | None = None
+        self._engine = None
 
     def init(self):
         self._engine = create_engine(
@@ -20,12 +19,12 @@ class _EngineHolder:
             pool_pre_ping=True,  # 避免拿到失效连接
         )
 
-    def get(self) -> Engine:
+    def get(self):
         if self._engine is None:
-            raise RuntimeError('engine not initialized')
+            raise RuntimeError('Engine not initialized')
         return self._engine
 
-    def connect(self) -> Connection:
+    def connect(self):
         return self.get().connect()
 
     def dispose(self):
