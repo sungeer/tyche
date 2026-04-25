@@ -28,6 +28,15 @@ uvicorn hostess:app --port 8848
 # 多 worker 进程 充分利用多核 CPU
 uvicorn app:app --workers 4 --host 0.0.0.0 --port 8848
 
+
+# 无进程管理
+uvicorn app:app --host 0.0.0.0 --port 8000
+
+
+# 单进程管理
+gunicorn app:app -w 1 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000
+
+
 # 或者用 gunicorn 管理 uvicorn workers（更稳健）
 gunicorn app:app -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8848
 
