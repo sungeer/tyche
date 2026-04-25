@@ -5,3 +5,5 @@
 !CLAUDE.md
 !src/
 !docs/
+!app.py
+!worker.py
