@@ -6,7 +6,6 @@ class _LLMRegistry:
 
     def __init__(self):
         self._store = {}
-        self._initialized = False
 
     def init(self):
         self._store = {
@@ -15,10 +14,9 @@ class _LLMRegistry:
             'fast': ChatOpenAI(model='gpt-4o', temperature=0),
             'claude': ChatAnthropic(model='claude-sonnet-4-5'),
         }
-        self._initialized = True
 
     def get(self, name):
-        if not self._initialized:
+        if not self._store:
             raise RuntimeError('LLMRegistry has not been initialized')
         if name not in self._store:
             raise KeyError(f'llm [{name}] not registered, available: {list(self._store.keys())}')
