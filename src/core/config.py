@@ -29,10 +29,13 @@ class DevConfig(BaseConfig):
     db_url = f'mysql+mysqldb://root:{db_passwd}@{db_host}:3306/hostess?charset=utf8mb4'
 
     # LLM 配置
-    default_model = 'gpt-3.5-turbo'
-    default_provider = 'openai'
-    temperature = 0.7  # float
-    max_tokens = None  # int
+    llm_common_url = 'http://127.0.0.1:7788/v1'
+    llm_common_key = 'sk_zaq1xsw2cde'
+    llm_common_model = 'qwen3-235b-a22b'
+
+    llm_think_url = 'http://127.0.0.1:6699/v1'
+    llm_think_key = 'sk_zaq1xsw2cde'
+    llm_think_model = 'qwen3-300b-a22b'
 
 
 class ProdConfig(BaseConfig):
@@ -47,10 +50,13 @@ class ProdConfig(BaseConfig):
     db_url = f'mysql+mysqldb://root:{db_passwd}@{db_host}:3306/hostess?charset=utf8mb4'
 
     # LLM 配置
-    default_model = 'gpt-3.5-turbo'
-    default_provider = 'openai'
-    temperature = 0.7  # float
-    max_tokens = None  # int
+    llm_common_url = 'http://127.0.0.1:7788/v1'
+    llm_common_key = 'sk_zaq1xsw2cde'
+    llm_common_model = 'qwen3-235b-a22b'
+
+    llm_think_url = 'http://127.0.0.1:6699/v1'
+    llm_think_key = 'sk_zaq1xsw2cde'
+    llm_think_model = 'qwen3-300b-a22b'
 
 
 config_map = {

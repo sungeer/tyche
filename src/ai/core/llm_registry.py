@@ -1,6 +1,7 @@
 import httpx
 from langchain_openai import ChatOpenAI
-from openai import http_client, api_key
+
+from src.core.config import settings
 
 
 class _LLMRegistry:
@@ -14,16 +15,16 @@ class _LLMRegistry:
 
         self._store = {
             'common': ChatOpenAI(
-                model='Qwen3-A22B',
-                base_url='http://127.0.0.1:7788/v1',
-                api_key='sk_zaq1xsw2cde',  # noqa
+                model=settings.llm_common_model,
+                base_url=settings.llm_common_url,
+                api_key=settings.llm_common_key,  # noqa
                 streaming=True,
                 http_async_client=self._client,
             ),
             'think': ChatOpenAI(
-                model='Qwen3-30B',
-                base_url='http://127.0.0.1:6699/v1',
-                api_key='sk_zaq1xsw2cde',  # noqa
+                model=settings.llm_think_model,
+                base_url=settings.llm_think_url,
+                api_key=settings.llm_think_key,  # noqa
                 streaming=True,
                 http_async_client=self._client,
             ),

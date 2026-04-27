@@ -3,8 +3,7 @@ from contextlib import asynccontextmanager
 from src.core.logger import setup_logger
 from src.core.db import db
 from src.core.executor import db_threadpool, bio_threadpool
-from src.ai.llm import llm_registry
-from src.ai.agents import  agents
+from src.ai.core import llm_registry, graph_registry
 
 
 @asynccontextmanager
@@ -14,7 +13,7 @@ async def lifespan(app):
     db.init()
 
     llm_registry.init()
-    agents.init(llm_registry)
+    graph_registry.init()  # 无需关闭 但 llm_registry 必须先行
 
     yield
 

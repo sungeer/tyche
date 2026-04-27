@@ -19,6 +19,11 @@ python -m pip install PyJWT
 
 python -m pip install langchain-openai langchain-core
 
+python -m pip install langgraph
+
+python -m pip install pydantic
+
+
 
 
 uvicorn hostess:app --host 0.0.0.0 --port 8848
