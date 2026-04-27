@@ -18,7 +18,7 @@ class _GraphRegistry:
             raise KeyError(f'graph [{name}] not registered, available: {list(self._store.keys())}')
         return self._store[name]
 
-    # registry['research']
+    # registry['game']
     def __getitem__(self, name):
         return self.get(name)
 

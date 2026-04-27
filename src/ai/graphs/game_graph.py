@@ -73,8 +73,8 @@ class RouterOutput(BaseModel):
 # 主 Agent
 def supervisor_node(state: GameState) -> dict:
     # last_user_msg = state['messages'][-1]
-    supervisor_context_window = 6  # 最近的 3 轮问答
-    recent_messages = state['messages'][-supervisor_context_window:]
+    recent_message_limit = 6  # 最近的 3 轮问答
+    recent_messages = state['messages'][-recent_message_limit:]
 
     llm = llm_registry['common']
     structured_supervisor_llm = llm.with_structured_output(RouterOutput)  # 绑定 结构化 输出
