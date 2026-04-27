@@ -21,4 +21,6 @@ async def lifespan(app):
     db_threadpool.shutdown(wait=True)
     bio_threadpool.shutdown(wait=True)
 
+    await llm_registry.close()
+
     db.dispose()
