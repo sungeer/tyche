@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine
+from sqlalchemy.ext.asyncio import create_async_engine
 
 from src.core.config import settings
 
@@ -9,7 +9,7 @@ class _EngineHolder:
         self._engine = None
 
     def init(self):
-        self._engine = create_engine(
+        self._engine = create_async_engine(
             settings.db_url,
             echo=False,  # 不打印SQL语句
             pool_size=5,  # 空闲连接 上限
@@ -17,18 +17,22 @@ class _EngineHolder:
             pool_timeout=30,  # 取连接等待 30s 失败就报错
             pool_recycle=1800,  # 回收重连
             pool_pre_ping=True,  # 避免拿到失效连接
+            pool_use_lifo=True,  # 复用热连接
         )
 
-    def get(self):
+    def connect(self):
         if self._engine is None:
             raise RuntimeError('Engine not initialized')
-        return self._engine
+        return self._engine.connect()
 
-    def connect(self):
-        return self.get().connect()
+    def begin(self):
+        if self._engine is None:
+            raise RuntimeError('Engine not initialized')
+        return self._engine.begin()
 
-    def dispose(self):
+    async def dispose(self):
         if self._engine is not None:
-            self._engine.dispose()
+            await self._engine.dispose()
+            self._engine = None
 
 db = _EngineHolder()
