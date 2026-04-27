@@ -13,9 +13,9 @@ from src.utils import serial
 
 
 async def chat(request):
-    body = serial.from_json(await request.body())
-    message = (body.get('message') or '').strip()
-    session_id = body.get('session_id') or ''
+    data = await request.json()  # dict
+    message = (data.get('message') or '').strip()
+    session_id = data.get('session_id') or ''
 
     if not message:
         raise BadRequestError('message 不能为空')
@@ -33,7 +33,7 @@ async def chat(request):
 
         async for token in service.chat_stream(state):
             full_text += token
-            yield f'event: token\ndata: {serial.to_json({"text": token})}\n\n'
+            yield serial.to_json({'text': token}) + '\n'
 
         # 流结束后保存本轮消息
         try:
@@ -53,4 +53,4 @@ async def chat(request):
         'Cache-Control': 'no-cache',
     }
 
-    return StreamingResponse(event_generator(), media_type='text/event-stream', headers=headers)
+    return StreamingResponse(event_generator(), media_type='application/x-ndjson', headers=headers)

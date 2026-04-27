@@ -1,24 +1,22 @@
-import datetime
-import decimal
+import json
 from typing import Any
 
-import orjson
 from starlette.responses import JSONResponse
 
-
-def json_encoder(obj):
-    if isinstance(obj, decimal.Decimal):
-        return float(obj)
-    elif isinstance(obj, datetime.datetime):
-        return obj.strftime('%Y-%m-%d %H:%M:%S')
-    elif isinstance(obj, datetime.date):
-        return obj.strftime('%Y-%m-%d')
-    raise TypeError(f'不支持的类型: {type(obj)}')
+from src.utils.serial import JsonExtendEncoder
 
 
 class Response(JSONResponse):
+
     def render(self, content: Any) -> bytes:
-        return orjson.dumps(content, default=json_encoder)
+        return json.dumps(
+            content,
+            cls=JsonExtendEncoder,
+            ensure_ascii=False,
+            allow_nan=False,
+            indent=None,
+            separators=(',', ':'),
+        ).encode('utf-8')
 
 
 # 成功响应

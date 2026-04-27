@@ -14,10 +14,10 @@ async def get_profile(request):
 
 @permission_required('order:create')
 async def create_order(request):
-    body = serial.from_json(await request.body())
+    data = await request.json()  # dict
     user_id = request.user.user_id
     roles = request.user.roles
 
-    order = await item_service.create_item(user_id, roles, body)
+    order = await item_service.create_item(user_id, roles, data)
     data = {'order_id': order.id}
     return ok(data=data, msg='下单成功')

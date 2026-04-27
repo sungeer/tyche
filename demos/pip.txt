@@ -9,7 +9,7 @@ pip install -r requirements.txt
 pip uninstall asyncmy
 
 
-python -m pip install starlette uvicorn loguru cryptography httpx sqlalchemy orjson
+python -m pip install starlette uvicorn loguru cryptography httpx sqlalchemy
 
 python -m pip install mysqlclient
 
