@@ -1,14 +1,7 @@
-import asyncio
-import json
-
 from loguru import logger
 from starlette.responses import StreamingResponse
 
 from src.core.exceptions import BadRequestError
-from src.core.response import ok
-from src.domains.agent import service, pipeline
-from src.domains.agent.state import make_initial_state
-from src.core.auth import login_required, permission_required
 from src.utils import serial
 
 
@@ -47,10 +40,8 @@ async def chat(request):
             logger.error(f'[chat] 消息保存失败：{e}')
 
     headers = {
-        'X-Run-Id': state['input']['run_id'],
-        'X-Turn-Id': state['input']['turn_id'],
-        'X-Session-Id': state['input']['session_id'],
         'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive'
     }
 
     return StreamingResponse(event_generator(), media_type='application/x-ndjson', headers=headers)
