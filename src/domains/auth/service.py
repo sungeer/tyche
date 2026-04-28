@@ -1,5 +1,4 @@
 from src.domains.auth import repository as auth_repository
-from src.utils.concurrency import run_in_threadpool
 from src.core.db import db
 from src.utils import jose
 
@@ -8,11 +7,8 @@ async def auth_token(data: dict):
     user_name = data['user_name']
     password = data['password']
 
-    def run_sync():
-        with db.connect() as conn:
-            return auth_repository.user_info(conn, user_name, password)
-
-    db_user = await run_in_threadpool(db_threadpool, run_sync)
+    with db.connect() as conn:
+        db_user = await auth_repository.user_info(conn, user_name, password)
 
     subject = db_user['id']
     extra_data = {'role': 'admin'}
