@@ -73,6 +73,7 @@ def build_game_graph():
 
     builder = StateGraph(GameState)  # type: ignore[arg-type]
 
+    # 注册节点
     builder.add_node('supervisor', supervisor_node)  # type: ignore[arg-type]
     builder.add_node('agent_a', agent_a_node)  # type: ignore[arg-type]
     builder.add_node('agent_b', agent_b_node)  # type: ignore[arg-type]
@@ -81,8 +82,10 @@ def build_game_graph():
     builder.add_node('tool_node_b', tool_node_b)
     builder.add_node('tool_node_c', tool_node_c)
 
+    # 设置入口
     builder.add_edge(START, 'supervisor')
 
+    # 添加 条件路由
     builder.add_conditional_edges(
         'supervisor',
         route_supervisor,  # 读取 state 值
@@ -109,6 +112,7 @@ def build_game_graph():
     )
     builder.add_conditional_edges('agent_c', route_agent_c)
 
+    # 工具执行后回到 指定节点
     builder.add_edge('tool_node_a', 'agent_a')  # 执行工具 -> 'agent_a' -> 'route_agent_a'
     builder.add_edge('tool_node_b', 'agent_b')
     builder.add_edge('tool_node_c', 'agent_c')

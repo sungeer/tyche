@@ -1,4 +1,4 @@
-from src.ai.game_graph.graph import build_game_graph
+from src.agents.game.graph import build_game_graph
 
 
 class _GraphRegistry:
