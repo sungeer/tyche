@@ -50,75 +50,25 @@ supervisor_agent_prompt = """\
 返回格式仅返回 JSON: {{"next":"..."}}
 """
 
-agent_a_system_prompt = """\
+agent_a_prompt = """\
 你是一个智能助手，具备网络搜索和数学计算能力。
 请根据用户的问题和对话历史，合理调用工具，给出准确完整的回答。
 """
 
-agent_b_system_prompt = """\
+agent_b_prompt = """\
 你是一个智能助手，具备数学计算和业务数据库查询能力。
 请根据用户的问题和对话历史，合理调用工具，给出准确完整的回答。
 """
 
-agent_c_system_prompt = """\
+agent_c_prompt = """\
 你是一个智能助手，具备网络搜索和业务数据库查询能力。
 请根据用户的问题和对话历史，合理调用工具，给出准确完整的回答。
 """
 
 
+# 结构化输出
 class RouterOutput(BaseModel):
     next: Literal['agent_a', 'agent_b', 'agent_c']
-
-
-# 主 Agent
-def supervisor_node(state: GameState) -> dict:
-    # last_user_msg = state['messages'][-1]
-    recent_message_limit = 6  # 最近的 3 轮问答
-    recent_messages = state['messages'][-recent_message_limit:]
-
-    llm = llm_registry['common']
-    structured_supervisor_llm = llm.with_structured_output(RouterOutput)  # 绑定 结构化 输出
-
-    routing = structured_supervisor_llm.invoke([
-        SystemMessage(content=supervisor_agent_prompt),
-        # last_user_msg,
-        *recent_messages,
-    ])
-    return {'next': routing.next}
-
-
-# 子 Agent
-def agent_a_node(state: GameState):
-    tools = [search_web, calculate]
-
-    llm = llm_registry['common']
-    llm_with_tools = llm.bind_tools(tools)
-
-    messages = [SystemMessage(content=agent_a_system_prompt)] + state['messages']
-    response = llm_with_tools.invoke(messages)
-    return {'messages': [response]}
-
-
-def agent_b_node(state: GameState):
-    tools = [calculate, query_database]
-
-    llm = llm_registry['common']
-    llm_with_tools = llm.bind_tools(tools)
-
-    messages = [SystemMessage(content=agent_b_system_prompt)] + state['messages']
-    response = llm_with_tools.invoke(messages)
-    return {'messages': [response]}
-
-
-def agent_c_node(state: GameState):
-    tools = [search_web, query_database]
-
-    llm = llm_registry['common']
-    llm_with_tools = llm.bind_tools(tools)
-
-    messages = [SystemMessage(content=agent_c_system_prompt)] + state['messages']
-    response = llm_with_tools.invoke(messages)
-    return {'messages': [response]}
 
 
 # ToolNode 实际 执行工具
@@ -132,34 +82,66 @@ def route_supervisor(state: GameState) -> str:
     return state['next']
 
 
-def route_agent_a(state: GameState) -> str:
-    last = state['messages'][-1]
-    if isinstance(last, AIMessage) and last.tool_calls:
-        return 'tool_node_a'
-    return END
-
-
-def route_agent_b(state: GameState) -> str:
-    last = state['messages'][-1]
-    if isinstance(last, AIMessage) and last.tool_calls:
-        return 'tool_node_b'
-    return END
-
-
-def route_agent_c(state: GameState) -> str:
-    last = state['messages'][-1]
-    if isinstance(last, AIMessage) and last.tool_calls:
-        return 'tool_node_c'
-    return END
-
-
 def build_game_graph():
-    builder = StateGraph(GameState)  # noqa
+    llm = llm_registry['common']
 
-    builder.add_node('supervisor', supervisor_node)  # noqa
-    builder.add_node('agent_a', agent_a_node)  # noqa
-    builder.add_node('agent_b', agent_b_node)  # noqa
-    builder.add_node('agent_c', agent_c_node)  # noqa
+    _supervisor_llm = llm.with_structured_output(RouterOutput)  # 绑定 结构化 输出
+
+    _llm_a = llm.bind_tools([search_web, calculate])
+    _llm_b = llm.bind_tools([calculate, query_database])
+    _llm_c = llm.bind_tools([search_web, query_database])
+
+    # 主 Agent
+    def supervisor_node(state: GameState) -> dict:
+        recent_message_limit = 6  # 最近的 3 轮问答
+        recent_messages = state['messages'][-recent_message_limit:]
+
+        routing = _supervisor_llm.invoke([
+            SystemMessage(content=supervisor_agent_prompt),
+            *recent_messages,
+        ])
+        return {'next': routing.next}
+
+    # 子 Agent
+    def agent_a_node(state: GameState):
+        messages = [SystemMessage(content=agent_a_prompt)] + state['messages']
+        response = _llm_a.invoke(messages)
+        return {'messages': [response]}
+
+    def agent_b_node(state: GameState):
+        messages = [SystemMessage(content=agent_b_prompt)] + state['messages']
+        response = _llm_b.invoke(messages)
+        return {'messages': [response]}
+
+    def agent_c_node(state: GameState):
+        messages = [SystemMessage(content=agent_c_prompt)] + state['messages']
+        response = _llm_c.invoke(messages)
+        return {'messages': [response]}
+
+    def route_agent_a(state: GameState) -> str:
+        last = state['messages'][-1]
+        if isinstance(last, AIMessage) and last.tool_calls:
+            return 'tool_node_a'
+        return END  # 确保了 agent 执行完毕后 图会正常结束
+
+    def route_agent_b(state: GameState) -> str:
+        last = state['messages'][-1]
+        if isinstance(last, AIMessage) and last.tool_calls:
+            return 'tool_node_b'
+        return END
+
+    def route_agent_c(state: GameState) -> str:
+        last = state['messages'][-1]
+        if isinstance(last, AIMessage) and last.tool_calls:
+            return 'tool_node_c'
+        return END
+
+    builder = StateGraph(GameState)  # type: ignore[arg-type]
+
+    builder.add_node('supervisor', supervisor_node)  # type: ignore[arg-type]
+    builder.add_node('agent_a', agent_a_node)  # type: ignore[arg-type]
+    builder.add_node('agent_b', agent_b_node)  # type: ignore[arg-type]
+    builder.add_node('agent_c', agent_c_node)  # type: ignore[arg-type]
     builder.add_node('tool_node_a', tool_node_a)
     builder.add_node('tool_node_b', tool_node_b)
     builder.add_node('tool_node_c', tool_node_c)
@@ -168,19 +150,31 @@ def build_game_graph():
 
     builder.add_conditional_edges(
         'supervisor',
-        route_supervisor,
+        route_supervisor,  # 读取 state 值
         {
             'agent_a': 'agent_a',
             'agent_b': 'agent_b',
             'agent_c': 'agent_c'
-        },
+        },  # 映射表
     )
 
-    builder.add_conditional_edges('agent_a', route_agent_a)
-    builder.add_conditional_edges('agent_b', route_agent_b)
+    # 隐式写法
+    builder.add_conditional_edges(
+        'agent_a',  # 执行 该节点
+        route_agent_a  # 判断 'agent_a' 节点的输出 是否需要工具
+    )
+    # 显示写法
+    builder.add_conditional_edges(
+        'agent_b',
+        route_agent_b,
+        {
+            'tool_node_b': 'tool_node_b',
+            END: END
+        }
+    )
     builder.add_conditional_edges('agent_c', route_agent_c)
 
-    builder.add_edge('tool_node_a', 'agent_a')
+    builder.add_edge('tool_node_a', 'agent_a')  # 执行工具 -> 'agent_a' -> 'route_agent_a'
     builder.add_edge('tool_node_b', 'agent_b')
     builder.add_edge('tool_node_c', 'agent_c')
 
