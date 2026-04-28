@@ -2,7 +2,8 @@ from contextlib import asynccontextmanager
 
 from src.core.logger import setup_logger
 from src.core.db import db
-from src.ai.core import llm_registry, graph_registry
+from src.core.llm_registry import llm_registry
+from src.core.graph_registry import graph_registry
 
 
 @asynccontextmanager

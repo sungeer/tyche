@@ -1,7 +1,7 @@
 from starlette.responses import StreamingResponse
 
 from src.core.exceptions import BadRequestError
-from src.domains.agent import service
+from src.agents.game import service
 from src.utils import serial, rand
 
 
@@ -21,7 +21,8 @@ async def chat(request):
             yield serial.to_json({'text': token}) + '\n'
 
     headers = {
-        'Cache-Control': 'no-cache'
+        'Cache-Control': 'no-cache',
+        'X-Accel-Buffering': 'no',  # 关闭 Nginx 缓冲
     }
 
     return StreamingResponse(event_generator(), media_type='application/x-ndjson', headers=headers)

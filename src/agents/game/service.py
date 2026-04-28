@@ -1,9 +1,9 @@
 from loguru import logger
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 
-from src.ai.core.graph_registry import graph_registry
+from src.core.graph_registry import graph_registry
 from src.core.db import db
-from src.domains.agent import repository
+from src.agents.game import repository
 
 _role_map = {
     'user': HumanMessage,
