@@ -26,7 +26,7 @@ class DevConfig(BaseConfig):
 
     db_passwd = quote_plus('admin')
     db_host = '127.0.0.1'
-    db_url = f'mysql+mysqldb://root:{db_passwd}@{db_host}:3306/hostess?charset=utf8mb4'
+    db_url = f'mysql+aiomysql://root:{db_passwd}@{db_host}:3306/hostess?charset=utf8mb4'
 
     # LLM 配置
     llm_common_url = 'http://127.0.0.1:7788/v1'
@@ -47,7 +47,7 @@ class ProdConfig(BaseConfig):
 
     db_passwd = quote_plus('admin')
     db_host = '127.0.0.1'
-    db_url = f'mysql+mysqldb://root:{db_passwd}@{db_host}:3306/hostess?charset=utf8mb4'
+    db_url = f'mysql+aiomysql://root:{db_passwd}@{db_host}:3306/hostess?charset=utf8mb4'
 
     # LLM 配置
     llm_common_url = 'http://127.0.0.1:7788/v1'

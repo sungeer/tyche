@@ -11,7 +11,7 @@ pip uninstall asyncmy
 
 python -m pip install starlette uvicorn loguru cryptography httpx sqlalchemy
 
-python -m pip install mysqlclient
+python -m pip install mysqlclient aiomysql
 
 python -m pip install huey
 
