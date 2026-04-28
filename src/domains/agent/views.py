@@ -1,16 +1,14 @@
-import secrets
-
 from starlette.responses import StreamingResponse
 
 from src.core.exceptions import BadRequestError
 from src.domains.agent import service
-from src.utils import serial
+from src.utils import serial, rand
 
 
 async def chat(request):
     data = await request.json()  # dict
 
-    session_id = data.get('session_id') or secrets.token_hex(9)
+    session_id = data.get('session_id') or rand.gen_token()
     user_input = (data.get('user_input') or '').strip()
 
     if not user_input:
@@ -22,6 +20,8 @@ async def chat(request):
         async for token in service.chat_stream_and_save(session_id, user_input, user_id):
             yield serial.to_json({'text': token}) + '\n'
 
-    headers = {'Cache-Control': 'no-cache'}
+    headers = {
+        'Cache-Control': 'no-cache'
+    }
 
     return StreamingResponse(event_generator(), media_type='application/x-ndjson', headers=headers)
