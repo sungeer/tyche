@@ -184,5 +184,4 @@ def build_game_graph():
     builder.add_edge('tool_node_b', 'agent_b')
     builder.add_edge('tool_node_c', 'agent_c')
 
-    graph = builder.compile()
-    return graph
+    return builder.compile()
