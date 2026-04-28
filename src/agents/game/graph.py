@@ -6,7 +6,6 @@ from src.core.llm_registry import llm_registry
 from src.agents.game import tools, prompts
 from src.agents.game.schema import GameState, RouterOutput
 
-
 # ToolNode 实际 执行工具
 tool_node_a = ToolNode([tools.search_web, tools.calculate])
 tool_node_b = ToolNode([tools.calculate, tools.query_database])
