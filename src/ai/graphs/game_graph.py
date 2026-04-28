@@ -92,30 +92,30 @@ def build_game_graph():
     _llm_c = llm.bind_tools([search_web, query_database])
 
     # 主 Agent
-    def supervisor_node(state: GameState) -> dict:
+    async def supervisor_node(state: GameState) -> dict:
         recent_message_limit = 6  # 最近的 3 轮问答
         recent_messages = state['messages'][-recent_message_limit:]
 
-        routing = _supervisor_llm.invoke([
+        routing = await _supervisor_llm.ainvoke([
             SystemMessage(content=supervisor_agent_prompt),
             *recent_messages,
         ])
         return {'next': routing.next}
 
     # 子 Agent
-    def agent_a_node(state: GameState):
+    async def agent_a_node(state: GameState):
         messages = [SystemMessage(content=agent_a_prompt)] + state['messages']
-        response = _llm_a.invoke(messages)
+        response = await _llm_a.ainvoke(messages)
         return {'messages': [response]}
 
-    def agent_b_node(state: GameState):
+    async def agent_b_node(state: GameState):
         messages = [SystemMessage(content=agent_b_prompt)] + state['messages']
-        response = _llm_b.invoke(messages)
+        response = await _llm_b.ainvoke(messages)
         return {'messages': [response]}
 
-    def agent_c_node(state: GameState):
+    async def agent_c_node(state: GameState):
         messages = [SystemMessage(content=agent_c_prompt)] + state['messages']
-        response = _llm_c.invoke(messages)
+        response = await _llm_c.ainvoke(messages)
         return {'messages': [response]}
 
     def route_agent_a(state: GameState) -> str:
