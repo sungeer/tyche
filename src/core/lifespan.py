@@ -4,6 +4,7 @@ from src.core.logger import setup_logger
 from src.core.db import db
 from src.core.llm_registry import llm_registry
 from src.core.graph_registry import graph_registry
+from src.core.milvus_registry import milvus_registry
 
 
 @asynccontextmanager
@@ -15,8 +16,12 @@ async def lifespan(app):
     llm_registry.init()
     graph_registry.init()  # 无需关闭 但 llm_registry 必须先行
 
+    milvus_registry.init()
+
     yield
 
     await llm_registry.close()
+
+    milvus_registry.close()
 
     await db.dispose()
