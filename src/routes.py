@@ -1,7 +1,7 @@
 from starlette.routing import Route
 
 from src.domains.auth import views as auth_views
-from src.domains.agent import views as agent_views
+from src.agents.game import views as agent_views
 
 routes = [
     Route('/auth.token', auth_views.auth_token, methods=['POST']),
