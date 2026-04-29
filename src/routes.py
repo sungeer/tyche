@@ -1,9 +1,14 @@
 from starlette.routing import Route
 
+from src.domains.health import views as health_views
 from src.domains.auth import views as auth_views
 from src.agents.game import views as agent_views
 
 routes = [
+    Route('/healthz.startup', health_views.startup_probe, methods=['GET']),
+    Route('/healthz.liveness', health_views.liveness, methods=['GET']),
+    Route('/healthz.readiness', health_views.readiness, methods=['GET']),
+
     Route('/auth.token', auth_views.auth_token, methods=['POST']),
 
     Route('/agent.chat', agent_views.chat, methods=['POST']),  # 多轮对话 SSE 流式
