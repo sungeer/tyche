@@ -1,11 +1,20 @@
-from src.core.response import ok
+from src.core.response import ok, Response
 from src.domains.health import service
+from src.core.startup_state import startup_state
 
 
 async def startup_probe(request):
-    if not app_started:
-        raise HTTPException(status_code=503, detail="starting")
-    return {"status": "started"}
+    not_ready = []
+    if not startup_state.app_started:
+        not_ready.append('app_started')
+    if not_ready:
+        # 主动返回 503 禁止走异常链路
+        return Response(
+            {'code': 503, 'msg': 'starting', 'data': {'pending': not_ready}},
+            status_code=503,
+        )
+    data = {'status': 'started'}
+    return ok(data)
 
 
 async def liveness(request):

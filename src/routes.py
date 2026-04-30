@@ -5,9 +5,9 @@ from src.domains.auth import views as auth_views
 from src.agents.game import views as agent_views
 
 routes = [
-    Route('/healthz.startup', health_views.startup_probe, methods=['GET']),
-    Route('/healthz.liveness', health_views.liveness, methods=['GET']),
-    Route('/healthz.readiness', health_views.readiness, methods=['GET']),
+    Route('/healthz.startup', health_views.startup_probe, methods=['GET']),  # 应用启动期间
+    Route('/healthz.liveness', health_views.liveness, methods=['GET']),  # 运行期间
+    Route('/healthz.readiness', health_views.readiness, methods=['GET']),  # 数据库连接等依赖服务
 
     Route('/auth.token', auth_views.auth_token, methods=['POST']),
 

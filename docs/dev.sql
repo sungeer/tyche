@@ -1,7 +1,6 @@
 
 
 
-
 -- 会话表
 CREATE TABLE conversations (
     id            INT             NOT NULL AUTO_INCREMENT COMMENT '主键',
