@@ -17,14 +17,14 @@ async def main():
     print(f"用户问题: {user_question}\n")
 
     try:
-        # ✅ await 异步调用 embedding
+        # await 异步调用 embedding
         embeddings = await client.embeddings.create(
             model="text-embedding-3-small",
             input=user_question
         )
         question_embedding = [data.embedding for data in embeddings.data]
 
-        # ✅ Milvus 是同步库，用 run_in_executor 丢到线程池，避免阻塞事件循环
+        # Milvus 是同步库，用 run_in_executor 丢到线程池，避免阻塞事件循环
         loop = asyncio.get_running_loop()
         search_params = {
             "metric_type": "COSINE",
