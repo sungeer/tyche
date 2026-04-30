@@ -23,6 +23,8 @@ python -m pip install langgraph
 
 python -m pip install pydantic
 
+python -m pip install openai
+
 
 
 
