@@ -53,7 +53,7 @@ for i, text in enumerate(retrieved_texts):
 # 把找到的背景知识和用户问题拼起来
 context_str = "\n".join([f"{i + 1}. {t}" for i, t in enumerate(retrieved_texts)])
 
-prompt = f"""
+prompt = f"""\
 你是一个严谨的法律助手。请仅仅根据以下提供的【参考资料】来回答用户的【问题】。
 如果参考资料中没有包含答案，请回答“根据提供的资料无法回答”。
 不要自己编造信息。
