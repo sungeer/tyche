@@ -18,7 +18,7 @@ class _CheckpointRegistry:
             user=settings.db_user,
             password=settings.db_pass,
             minsize=1,
-            maxsize=5,
+            maxsize=5,  # AIOMySQLSaver 内部有锁导致该配置失效
             pool_recycle=1800,
             charset='utf8mb4',
             autocommit=True,  # LangGraph 指定

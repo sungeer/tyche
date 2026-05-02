@@ -1,7 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(/c/Pojo/hostess/.venv/Scripts/python *)"
-    ]
-  }
-}
