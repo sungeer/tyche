@@ -30,3 +30,4 @@
 - langchain 1.2.17
 - aiomysql 0.3.2
 - uvicorn 0.46.0
+- SQLAlchemy 2.0.49
