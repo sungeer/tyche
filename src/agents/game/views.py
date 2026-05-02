@@ -17,7 +17,7 @@ async def chat(request):
     user_id = request.user.user_id
 
     async def event_generator():
-        async for token in service.chat_stream_and_save(session_id, user_input):
+        async for token in service.chat_stream(session_id, user_input):
             yield serial.to_json({'text': token}) + '\n'
 
     headers = {
