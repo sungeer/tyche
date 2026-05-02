@@ -25,6 +25,7 @@ python -m pip install pydantic
 
 python -m pip install openai
 
+python -m pip install langgraph-checkpoint-mysql
 
 
 

@@ -16,7 +16,7 @@ async def lifespan(app):
     startup_state.db_pool_ready = True
 
     llm_registry.init()
-    graph_registry.init()  # 无需关闭 但 llm_registry 必须先行
+    await graph_registry.init()  # llm_registry 必须先行
 
     milvus_registry.init()
 
@@ -27,5 +27,7 @@ async def lifespan(app):
     await llm_registry.close()
 
     milvus_registry.close()
+
+    await graph_registry.dispose()
 
     await db.dispose()
