@@ -1,6 +1,6 @@
 from langchain_core.messages import HumanMessage
 
-from src.core.ai.graph_registry import graph_registry
+from src.ai.graph_registry import graph_registry
 
 
 async def chat_stream(graph, input_state: dict, config: dict):
