@@ -1,10 +1,11 @@
 from contextlib import asynccontextmanager
 
 from src.core.logger import setup_logger
-from src.core.db import db
-from src.core.llm_registry import llm_registry
-from src.core.graph_registry import graph_registry
-from src.core.milvus_registry import milvus_registry
+from src.core.db_registry import db
+from src.ai.llm_registry import llm_registry
+from src.ai.graph_registry import graph_registry
+from src.ai.milvus_registry import milvus_registry
+from src.ai.checkpoint_registry import checkpoint_registry
 from src.core.startup_state import startup_state
 
 
@@ -12,8 +13,10 @@ from src.core.startup_state import startup_state
 async def lifespan(app):
     setup_logger()
 
-    db.init()
+    await db.init()
     startup_state.db_pool_ready = True
+
+    await checkpoint_registry.init()
 
     llm_registry.init()
     await graph_registry.init()  # llm_registry 必须先行
@@ -28,6 +31,6 @@ async def lifespan(app):
 
     milvus_registry.close()
 
-    await graph_registry.dispose()
+    await checkpoint_registry.dispose()
 
     await db.dispose()

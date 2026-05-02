@@ -22,12 +22,12 @@ class _EngineHolder:
 
     def connect(self):
         if self._engine is None:
-            raise RuntimeError('Engine not initialized')
+            raise RuntimeError('db engine not initialized')
         return self._engine.connect()
 
     def begin(self):
         if self._engine is None:
-            raise RuntimeError('Engine not initialized')
+            raise RuntimeError('db engine not initialized')
         return self._engine.begin()
 
     async def dispose(self):

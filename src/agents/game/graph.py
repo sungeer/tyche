@@ -2,7 +2,7 @@ from langgraph.graph import StateGraph, START, END
 from langchain_core.messages import AIMessage, SystemMessage
 from langgraph.prebuilt import ToolNode
 
-from src.core.llm_registry import llm_registry
+from src.core.ai.llm_registry import llm_registry
 from src.agents.game import tools, prompts
 from src.agents.game.schema import GameState, RouterOutput
 

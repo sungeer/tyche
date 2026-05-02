@@ -9,9 +9,9 @@ pip install -r requirements.txt
 pip uninstall asyncmy
 
 
-python -m pip install starlette uvicorn loguru cryptography httpx sqlalchemy
+python -m pip install starlette uvicorn loguru cryptography httpx
 
-python -m pip install mysqlclient aiomysql
+python -m pip install aiomysql
 
 python -m pip install huey
 
