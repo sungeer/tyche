@@ -17,7 +17,7 @@ def setup_logger():
     logger.add(
         settings.log_path,
         rotation='200MB',
-        format='{time:YYYY-MM-DD HH:mm:ss} - {level} - {message}',
+        format='{time:YYYY-MM-DD HH:mm:ss} - {level} - [{extra[run_id]}] {message}',
         encoding='utf-8',
         enqueue=True,
         diagnose=False,
