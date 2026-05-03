@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from src.core.config import settings
 
 
-class _EngineHolder:
+class _PoolDBRegistry:
 
     def __init__(self):
         self._engine = None
@@ -35,4 +35,4 @@ class _EngineHolder:
             await self._engine.dispose()
             self._engine = None
 
-db = _EngineHolder()
+db = _PoolDBRegistry()
