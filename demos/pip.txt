@@ -13,19 +13,11 @@ python -m pip install starlette uvicorn loguru cryptography httpx sqlalchemy
 
 python -m pip install aiomysql
 
-python -m pip install huey
-
-python -m pip install PyJWT
+python -m pip install huey PyJWT
 
 python -m pip install langchain-openai langchain-core
 
-python -m pip install langgraph
-
-python -m pip install pydantic
-
-python -m pip install openai
-
-python -m pip install langgraph-checkpoint-mysql
+python -m pip install langgraph pydantic openai
 
 
 
