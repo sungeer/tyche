@@ -13,7 +13,7 @@ from src.core.startup_state import startup_state
 async def lifespan(app):
     setup_logger()
 
-    await db.init()
+    db.init()
     startup_state.db_pool_ready = True
 
     await checkpoint_registry.init()
