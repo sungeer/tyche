@@ -1,5 +1,5 @@
 from langgraph.graph import StateGraph, START, END
-from langchain_core.messages import AIMessage, SystemMessage
+from langchain_core.messages import AIMessage, SystemMessage, HumanMessage
 from langgraph.prebuilt import ToolNode
 
 from src.ai.llm_registry import llm_registry
@@ -29,7 +29,14 @@ def build_game_graph(checkpointer):
     # 主 Agent
     async def supervisor_node(state: GameState) -> dict:
         recent_message_limit = 6  # 最近的 3 轮问答
-        recent_messages = state['messages'][-recent_message_limit:]
+
+        # 只保留 Human 消息 和 AI 最终回复（排除带 tool_calls 的中间态）
+        dialogue_messages = [
+            msg for msg in state['messages']
+            if isinstance(msg, HumanMessage) or (isinstance(msg, AIMessage) and not msg.tool_calls)
+        ]
+
+        recent_messages = dialogue_messages[-recent_message_limit:]
 
         routing = await _supervisor_llm.ainvoke([
             SystemMessage(content=prompts.supervisor_agent_prompt),
@@ -39,7 +46,24 @@ def build_game_graph(checkpointer):
 
     # 子 Agent
     async def agent_a_node(state: GameState):
-        messages = [SystemMessage(content=prompts.agent_a_prompt)] + state['messages']
+        all_messages = state['messages']
+
+        # 当前轮次起点（最后一条 HumanMessage 的位置） 倒序遍历
+        last_human_idx = next(
+            i for i in range(len(all_messages) - 1, -1, -1)
+            if isinstance(all_messages[i], HumanMessage)
+        )
+
+        # 历史部分：只保留对话主干
+        history = [
+            msg for msg in all_messages[:last_human_idx]
+            if isinstance(msg, HumanMessage) or (isinstance(msg, AIMessage) and not msg.tool_calls)
+        ]
+
+        # 当前轮次：完整保留（包含工具循环所需的 ToolMessage）
+        current_turn = all_messages[last_human_idx:]
+
+        messages = [SystemMessage(content=prompts.agent_a_prompt)] + history + current_turn
         response = await _llm_a.ainvoke(messages)
         return {'messages': [response]}
 
