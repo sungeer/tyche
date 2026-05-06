@@ -1,7 +1,7 @@
 from src.core.exceptions import BusinessError
 from src.core.codes import BizCode
 from src.domains.items import repository as item_repository
-from src.core.db import db
+from src.core.db_registry import db
 
 
 async def create_item(user_id: int, roles: list[str], data: dict):
