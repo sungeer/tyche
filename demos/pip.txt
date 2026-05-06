@@ -21,6 +21,12 @@ python -m pip install langgraph pydantic openai
 
 
 
+python -m pip install langgraph-checkpoint-mysql
+
+pip install langgraph-checkpoint-sqlite aiosqlite
+
+
+
 uvicorn hostess:app --host 0.0.0.0 --port 8848
 
 
