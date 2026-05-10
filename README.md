@@ -1,6 +1,6 @@
 # hostess
 
-*An api built with Python and Starlette.*
+*An api built with Starlette and Huey.*
 
 ## Installation
 
