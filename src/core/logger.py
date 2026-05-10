@@ -16,8 +16,9 @@ def setup_logger():
 
     logger.add(
         settings.log_path,
-        rotation='200MB',
-        format='{time:YYYY-MM-DD HH:mm:ss} - {level} - [{extra[run_id]}] {message}',
+        rotation='00:00',  # 每天零点轮转
+        retention='7 days',
+        format='{time:YYYY-MM-DD HH:mm:ss} - {level} - [{extra[run_id]}] {name}:{function}:{line} - {message}',
         encoding='utf-8',
         enqueue=True,
         diagnose=False,
@@ -28,7 +29,7 @@ def setup_logger():
 
     logger.add(
         sink=sys.stdout,  # 标准输出流
-        format='{time:YYYY-MM-DD HH:mm:ss} - {level} - [{extra[run_id]}] {message}',  # 日志格式
+        format='{time:YYYY-MM-DD HH:mm:ss} - {level} - [{extra[run_id]}] {name}:{function}:{line} - {message}',
         level='INFO',
         diagnose=False,  # 关闭变量值
         backtrace=False,  # 关闭完整堆栈跟踪
