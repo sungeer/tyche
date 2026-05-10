@@ -23,9 +23,6 @@
 ## 环境要求
 - Python 3.13
 - MySQL 8.4.9 LTS
-- langgraph 1.1.10
 - starlette 1.0.0
-- langchain 1.2.17
-- aiomysql 0.3.2
+- PyMySQL 1.1.3
 - uvicorn 0.46.0
-- SQLAlchemy 2.0.49

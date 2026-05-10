@@ -1,7 +1,7 @@
 from src.core.exceptions import BusinessError
 from src.core.codes import BizCode
 from src.domains.health import repository
-from src.core.db import db
+from src.core.db_registry import db
 
 
 async def check_db_conn():
