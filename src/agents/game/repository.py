@@ -43,7 +43,7 @@ async def get_messages(conn, conversation_id: int) -> list[dict]:
 
 async def insert_message(conn, conversation_id: int, role: str, content: str) -> None:
     sql = text('''
-        INSERT INTO messages (conversation_id, role, content, status)
-        VALUES (:conversation_id, :role, :content, 'completed')
+        INSERT INTO messages (conversation_id, role, content)
+        VALUES (:conversation_id, :role, :content)
     ''')
     await conn.execute(sql, {'conversation_id': conversation_id, 'role': role, 'content': content})

@@ -17,7 +17,7 @@ def route_supervisor(state: GameState) -> str:
     return state['next']
 
 
-def build_game_graph(checkpointer):
+def build_game_graph():
     llm = llm_registry['common']
 
     _supervisor_llm = llm.with_structured_output(RouterOutput)  # 绑定 结构化 输出
@@ -141,4 +141,4 @@ def build_game_graph(checkpointer):
     builder.add_edge('tool_node_b', 'agent_b')
     builder.add_edge('tool_node_c', 'agent_c')
 
-    return builder.compile(checkpointer=checkpointer)
+    return builder.compile()

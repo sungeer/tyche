@@ -15,7 +15,7 @@ class JsonExtendEncoder(json.JSONEncoder):
             return float(obj)
         elif isinstance(obj, bytes):
             return obj.decode('utf-8')
-        if isinstance(obj, uuid.UUID):
+        elif isinstance(obj, uuid.UUID):
             return str(obj)
         return super().default(obj)
 

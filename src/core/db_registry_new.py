@@ -1,3 +1,4 @@
+from contextlib import contextmanager, suppress
 from urllib.parse import urlparse, unquote_plus, parse_qs
 
 import pymysql
@@ -32,9 +33,10 @@ class _PoolHolder:
             maxconnections=12,  # 空闲+高峰上限（对应原 pool_size=5 + max_overflow=7）
             mincached=5,        # 启动时预建的空闲连接数
             maxcached=5,        # 空闲连接上限
-            blocking=True,      # 连接用尽时阻塞等待，不抛异常（对应原 pool_timeout）
+            blocking=False,      # 连接用尽时阻塞等待，不抛异常（对应原 pool_timeout）
             ping=1,             # 取连接前 ping，避免拿到失效连接（对应原 pool_pre_ping）
             cursorclass=pymysql.cursors.DictCursor,
+            autocommit=False,
             host=params['host'],
             port=params['port'],
             user=params['user'],
@@ -43,10 +45,42 @@ class _PoolHolder:
             charset=params['charset'],
         )
 
+    @contextmanager
     def connect(self):
         if self._pool is None:
             raise RuntimeError('db pool not initialized')
-        return self._pool.connection()
+        conn = self._pool.connection()
+        cursor = None
+        try:
+            cursor = conn.cursor()
+            yield cursor
+        finally:
+            if cursor is not None:
+                with suppress(Exception):
+                    cursor.close()
+            with suppress(Exception):
+                conn.close()
+
+    @contextmanager
+    def begin(self):
+        if self._pool is None:
+            raise RuntimeError('db pool not initialized')
+        conn = self._pool.connection()
+        cursor = None
+        try:
+            conn.begin()
+            cursor = conn.cursor()
+            yield cursor
+            conn.commit()
+        except:
+            conn.rollback()
+            raise
+        finally:
+            if cursor is not None:
+                with suppress(Exception):
+                    cursor.close()
+            with suppress(Exception):
+                conn.close()  # 归还到连接池
 
     def dispose(self):
         if self._pool is not None:

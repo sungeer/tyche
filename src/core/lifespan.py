@@ -5,7 +5,6 @@ from src.core.db_registry import db
 from src.ai.llm_registry import llm_registry
 from src.agents.game.graph_registry import graph_registry
 from src.ai.milvus_registry import milvus_registry
-from src.ai.checkpoint_registry import checkpoint_registry
 from src.core.startup_state import startup_state
 
 
@@ -15,8 +14,6 @@ async def lifespan(app):
 
     db.init()
     startup_state.db_pool_ready = True
-
-    await checkpoint_registry.init()
 
     llm_registry.init()
     await graph_registry.init()  # llm_registry 必须先行
@@ -30,7 +27,5 @@ async def lifespan(app):
     await llm_registry.close()
 
     milvus_registry.close()
-
-    await checkpoint_registry.dispose()
 
     await db.dispose()

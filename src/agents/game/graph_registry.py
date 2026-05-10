@@ -1,4 +1,3 @@
-from src.ai.checkpoint_registry import checkpoint_registry
 from src.agents.game.graph import build_game_graph
 
 
@@ -6,13 +5,10 @@ class _GraphRegistry:
 
     def __init__(self):
         self._store = {}
-        self._checkpointer_cm = None  # 保存上下文管理器，用于关闭时清理
 
     async def init(self):
-        checkpointer = checkpoint_registry.instance()
-
         self._store = {
-            'game': build_game_graph(checkpointer),
+            'game': build_game_graph(),
         }
 
     def get(self, name):

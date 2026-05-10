@@ -1,7 +1,5 @@
 import aiomysql
-import aiosqlite
-from langgraph.checkpoint.mysql.aio import AIOMySQLSaver
-from langgraph.checkpoint.sqlite.aio import AsyncSqliteSaver
+from langgraph.checkpoint.mysql.aio import AIOMySQLSaver  # 'pip install langgraph-checkpoint-mysql'
 
 from src.core.config import settings
 
@@ -13,6 +11,10 @@ class _CheckpointRegistry:
         self._checkpointer = None
 
     async def init(self):
+        """不建议使用 aiomysql
+        因为 aiomysql 没有'探活'
+        且 AIOMySQLSaver 实现上有一把全局锁
+        """
         self._pool = await aiomysql.create_pool(  # type: ignore[misc]
             host=settings.db_host,
             port=settings.db_port,
