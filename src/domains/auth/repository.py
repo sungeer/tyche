@@ -1,7 +1,7 @@
 from sqlalchemy import text
 
 
-def user_info(conn, user_name, password):
+async def user_info(conn, user_name, password):
     sql = text('''
         SELECT
             id, name, age

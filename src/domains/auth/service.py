@@ -1,5 +1,5 @@
 from src.domains.auth import repository as auth_repository
-from src.core.db import db
+from src.core.db_registry import db
 from src.utils import jose
 
 
