@@ -1,4 +1,4 @@
-# hostess
+# tyche
 
 *An api built with Starlette and Huey.*
 
@@ -6,8 +6,8 @@
 
 clone:
 ```
-$ git clone git@github.com:sungeer/hostess.git
-$ cd hostess
+$ git clone git@github.com:sungeer/tyche.git
+$ cd tyche
 ```
 create & activate virtual env then install dependency:
 
@@ -19,7 +19,7 @@ $ pip install -r requirements.txt
 ```
 then run:
 ```
-$ uvicorn hostess:app --port 8848
+$ uvicorn app:app --port 8848
 * Running on http://127.0.0.1:8848/
 ```
 
