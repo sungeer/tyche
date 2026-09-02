@@ -1,6 +1,6 @@
 # tyche
 
-*An ‌Automation Script‌.*
+*An api built with Starlette and Huey.*
 
 ## Installation
 
