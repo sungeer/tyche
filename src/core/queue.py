@@ -1,7 +1,5 @@
 from huey import RedisHuey, MemoryHuey
 
-from src.core.config import settings
-
 # huey = RedisHuey(
 #     name=settings.APP_NAME,
 #     host=settings.REDIS_HOST,

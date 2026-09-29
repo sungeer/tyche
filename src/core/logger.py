@@ -2,9 +2,6 @@ import sys
 
 from loguru import logger
 
-from src.core.context import run_id_var
-from src.core.config import settings
-
 
 def setup_logger():
     logger.remove()
