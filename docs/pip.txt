@@ -1,0 +1,21 @@
+﻿
+pip cache purge  # 清除缓存
+
+pip freeze > requirements.txt
+pip install -r requirements.txt
+
+
+
+python -m pip install huey
+
+
+
+huey_consumer worker.huey
+
+
+# pycharm
+Module name -> huey.bin.huey_consumer
+Parameters -> worker.huey
+
+
+
