@@ -24,9 +24,9 @@ def _require(name: str) -> str:
 _ENVIRONMENTS = ('development', 'testing', 'production')
 ENVIRONMENT = _require('ENVIRONMENT')
 if ENVIRONMENT not in _ENVIRONMENTS:
-    raise ValueError(f'Invalid ENVIRONMENT: {ENVIRONMENT}，only allowed {sorted(_ENVIRONMENTS)}')
+    raise ValueError(f'Invalid ENVIRONMENT: {ENVIRONMENT}, only allowed {sorted(_ENVIRONMENTS)}')
 
 # 日志
 LOG_DIR = Path(os.getenv('LOG_DIR', default=str(BASE_DIR / 'logs')))
 
-VERSION = '26.0929.2152'
+VERSION = '26.0930.0642'

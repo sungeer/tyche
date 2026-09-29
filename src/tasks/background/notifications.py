@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 @task_queue.task(retries=3, retry_delay=30)
 def send_notification():
-    logger.info('begin send otification')
+    logger.info('begin send notification')
 
     time.sleep(3)
 
