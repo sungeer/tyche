@@ -8,6 +8,10 @@ pip install -r requirements.txt
 
 python -m pip install huey
 
+python -m pip install httpx2
+
+python -m pip install python-dotenv
+
 
 
 huey_consumer worker.huey
