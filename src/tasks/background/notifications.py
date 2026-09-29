@@ -1,12 +1,12 @@
 import logging
 import time
 
-from src.tasks.core.queue import huey
+from src.tasks.core.queue import task_queue
 
 logger = logging.getLogger(__name__)
 
 
-@huey.task(retries=3, retry_delay=30)
+@task_queue.task(retries=3, retry_delay=30)
 def send_notification():
     logger.info('begin send otification')
 

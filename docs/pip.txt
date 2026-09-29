@@ -6,20 +6,16 @@ pip install -r requirements.txt
 
 
 
-python -m pip install huey
-
-python -m pip install httpx2
-
-python -m pip install python-dotenv
+python -m pip install huey httpx2 python-dotenv
 
 
 
-huey_consumer worker.huey
+huey_consumer worker.task_queue
 
 
 # pycharm
 Module name -> huey.bin.huey_consumer
-Parameters -> worker.huey
+Parameters -> worker.task_queue
 
 
 

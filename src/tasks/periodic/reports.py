@@ -3,13 +3,13 @@ import time
 
 from huey import crontab
 
-from src.tasks.core.queue import huey
+from src.tasks.core.queue import task_queue
 
 logger = logging.getLogger(__name__)
 
 
 # 每天 03:00
-@huey.periodic_task(crontab(hour='3', minute='0'))
+@task_queue.periodic_task(crontab(hour='3', minute='0'))
 def daily_report():
     logger.info('begin daily report')
 

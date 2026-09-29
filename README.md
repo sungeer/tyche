@@ -1,6 +1,6 @@
 # tyche
 
-*An api built with Starlette and Huey.*
+*A task worker built with Huey.*
 
 ## Installation
 
@@ -13,14 +13,19 @@ create & activate virtual env then install dependency:
 
 with venv/virtualenv + pip:
 ```
-$ python -m venv env  # use `python3 ...` for Python3 on Linux & macOS
-$ source env/bin/activate  # use `env\Scripts\activate` on Windows
-$ pip install -r requirements.txt
+$ python -m venv .venv  # use `python3 ...` for Python3 on Linux & macOS
+$ source .venv/bin/activate  # use `.venv\Scripts\activate` on Windows
+$ pip install huey httpx2 python-dotenv
 ```
-then run:
+copy the env template and fill in:
 ```
-$ uvicorn app:app --port 8848
-* Running on http://127.0.0.1:8848/
+$ cp .env.example .env
+```
+`ENVIRONMENT` is required, and only accepts `development` / `testing` / `production`.
+
+then run the consumer:
+```
+$ huey_consumer worker.task_queue
 ```
 
 ## License
