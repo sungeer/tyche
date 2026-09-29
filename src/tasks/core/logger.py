@@ -16,8 +16,6 @@ def setup_logger():
 
     root_logger.setLevel(logging.INFO)
 
-    logging.getLogger('apscheduler').setLevel(logging.WARNING)
-
     formatter = logging.Formatter(
         fmt='%(asctime)s | %(levelname)s | %(message)s (%(name)s:%(lineno)d)',
         datefmt='%H:%M:%S'
