@@ -1,10 +1,11 @@
-from huey import RedisHuey, MemoryHuey
+from huey import RedisHuey
 
-# huey = RedisHuey(
-#     name=settings.APP_NAME,
-#     host=settings.REDIS_HOST,
-#     port=settings.REDIS_PORT,
-#     db=settings.REDIS_DB,
-# )
+from src import settings
 
-huey = MemoryHuey('my-app')
+huey = RedisHuey(
+    name='tyche',
+    results=False,  # 不保存任务结果
+    host=settings.REDIS_HOST,
+    port=settings.REDIS_PORT,
+    db=settings.REDIS_DB,
+)

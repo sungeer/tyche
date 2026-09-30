@@ -26,7 +26,12 @@ ENVIRONMENT = _require('ENVIRONMENT')
 if ENVIRONMENT not in _ENVIRONMENTS:
     raise ValueError(f'Invalid ENVIRONMENT: {ENVIRONMENT}, only allowed {sorted(_ENVIRONMENTS)}')
 
+VERSION = '26.0930.0642'
+
 # 日志
 LOG_DIR = Path(os.getenv('LOG_DIR', default=str(BASE_DIR / 'logs')))
 
-VERSION = '26.0930.0642'
+# Redis（huey 队列后端）
+REDIS_HOST = os.getenv('REDIS_HOST', default='127.0.0.1')
+REDIS_PORT = int(os.getenv('REDIS_PORT', default='6379'))
+REDIS_DB = int(os.getenv('REDIS_DB', default='0'))
