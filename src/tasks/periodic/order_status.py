@@ -8,8 +8,8 @@ from src.tasks.core.queue import task_queue
 logger = logging.getLogger(__name__)
 
 
-# 每 5 分钟
-@task_queue.periodic_task(crontab(minute='*/5'))
+# 每 3 分钟
+@task_queue.periodic_task(crontab(minute='*/3'))
 def sync_order_status():
     logger.info('begin sync order status')
 
