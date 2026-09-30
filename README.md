@@ -25,7 +25,7 @@ $ cp .env.example .env
 
 then run the consumer:
 ```
-$ huey_consumer worker.task_queue
+$ huey_consumer -q worker.task_queue
 ```
 
 ## License
