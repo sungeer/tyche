@@ -7,4 +7,4 @@ from huey import RedisHuey, MemoryHuey
 #     db=settings.REDIS_DB,
 # )
 
-task_queue = MemoryHuey('my-app')
+huey = MemoryHuey('my-app')

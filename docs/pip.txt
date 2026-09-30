@@ -11,12 +11,14 @@ python -m pip install huey httpx2 python-dotenv
 
 
 
-huey_consumer -q worker.task_queue
+huey_consumer -q worker.huey
+
+huey_consumer -q -w 4 worker.huey
 
 
 # pycharm
 Module name -> huey.bin.huey_consumer
-Parameters -> worker.task_queue
+Parameters -> worker.huey
 
 
 
