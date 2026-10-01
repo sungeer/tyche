@@ -13,6 +13,8 @@ dramatiq worker --skip-logging
 
 dramatiq worker --skip-logging -p 1 -t 4
 
+dramatiq worker --skip-logging --log-file logs/tyche.log
+
 
 # pycharm
 Module name -> dramatiq

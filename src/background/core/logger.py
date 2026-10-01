@@ -1,8 +1,5 @@
 import logging
 import sys
-from logging.handlers import TimedRotatingFileHandler
-
-from src import settings
 
 
 def setup_logger():
@@ -17,22 +14,10 @@ def setup_logger():
     root_logger.setLevel(logging.INFO)
 
     formatter = logging.Formatter(
-        fmt='%(asctime)s | %(levelname)s | %(message)s (%(name)s:%(lineno)d)',
-        datefmt='%H:%M:%S'
+        fmt='%(asctime)s | %(levelname)s | %(message)s (%(name)s:%(lineno)d)'
     )
 
-    if settings.ENVIRONMENT == 'development':
-        console_handler = logging.StreamHandler(sys.stdout)
-        console_handler.setFormatter(formatter)
-        root_logger.addHandler(console_handler)
-
-    log_file = settings.LOG_DIR / 'tyche.log'
-
-    file_handler = TimedRotatingFileHandler(
-        log_file,
-        when='midnight',
-        backupCount=14,
-        encoding='utf-8'
-    )
-    file_handler.setFormatter(formatter)
-    root_logger.addHandler(file_handler)
+    # 消费者进程的 stdout 已被 dramatiq 换成通往主进程的管道，记录统一由主进程落盘
+    handler = logging.StreamHandler(sys.stdout)
+    handler.setFormatter(formatter)
+    root_logger.addHandler(handler)
