@@ -1,12 +1,12 @@
 import logging
 import time
 
-from src.tasks.app import huey
+import dramatiq
 
 logger = logging.getLogger(__name__)
 
 
-@huey.task(retries=3, retry_delay=30)
+@dramatiq.actor(max_retries=3, min_backoff=30000)
 def send_notification():
     logger.info('begin send notification')
 

@@ -1,11 +1,13 @@
-from huey import RedisHuey
+import dramatiq
+from dramatiq.brokers.redis import RedisBroker
 
 from src import settings
 
-huey = RedisHuey(
-    name='tyche',
-    results=False,  # 不保存任务结果
+broker = RedisBroker(
     host=settings.REDIS_HOST,
     port=settings.REDIS_PORT,
     db=settings.REDIS_DB,
+    namespace='tyche',
 )
+
+dramatiq.set_broker(broker)

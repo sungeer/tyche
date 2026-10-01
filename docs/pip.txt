@@ -9,14 +9,14 @@ python -m pip install pytest httpx2 python-dotenv redis dramatiq
 
 
 
-huey_consumer -q worker.huey
+dramatiq worker --skip-logging
 
-huey_consumer -q -w 4 worker.huey
+dramatiq worker --skip-logging -p 1 -t 4
 
 
 # pycharm
-Module name -> huey.bin.huey_consumer
-Parameters -> worker.huey
+Module name -> dramatiq
+Parameters -> --skip-logging worker
 
 
 

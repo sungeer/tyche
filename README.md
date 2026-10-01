@@ -1,6 +1,6 @@
 # tyche
 
-*A task worker built with Huey.*
+*A task worker built with Dramatiq.*
 
 ## Installation
 
@@ -15,7 +15,7 @@ with venv/virtualenv + pip:
 ```
 $ python -m venv .venv  # use `python3 ...` for Python3 on Linux & macOS
 $ source .venv/bin/activate  # use `.venv\Scripts\activate` on Windows
-$ pip install huey httpx2 python-dotenv redis
+$ pip install dramatiq httpx2 python-dotenv redis
 ```
 copy the env template and fill in:
 ```
@@ -28,8 +28,15 @@ optional and default to `127.0.0.1` / `6379` / `0`.
 
 then run the consumer:
 ```
-$ huey_consumer -q worker.huey
+$ dramatiq worker --skip-logging
 ```
+
+`--skip-logging` keeps dramatiq from installing its own root log handler, so
+the console output uses this project's log format instead of printing every
+record twice.
+
+`-p` sets the number of worker processes and `-t` the number of worker threads
+per process (defaults: one process per CPU, 8 threads).
 
 ## License
 
