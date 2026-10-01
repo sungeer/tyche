@@ -26,7 +26,7 @@ ENVIRONMENT = _require('ENVIRONMENT')
 if ENVIRONMENT not in _ENVIRONMENTS:
     raise ValueError(f'Invalid ENVIRONMENT: {ENVIRONMENT}, only allowed {sorted(_ENVIRONMENTS)}')
 
-VERSION = '26.0930.0642'
+VERSION = '26.1001.1204'
 
 # 日志
 LOG_DIR = Path(os.getenv('LOG_DIR', default=str(BASE_DIR / 'logs')))
