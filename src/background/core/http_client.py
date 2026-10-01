@@ -2,10 +2,8 @@ from contextlib import suppress
 
 import httpx2
 
-# 统一暴露传输层错误，供上层捕获，避免各域直接依赖具体 HTTP 包
 HTTPError = httpx2.HTTPError
 
-# 供调用方按请求覆盖超时，不必直接依赖 httpx2
 Timeout = httpx2.Timeout
 
 
