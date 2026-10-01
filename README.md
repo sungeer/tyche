@@ -28,19 +28,19 @@ optional and default to `127.0.0.1` / `6379` / `0`.
 
 then run the consumer:
 ```
-$ dramatiq worker --skip-logging                             # development：日志打到控制台
-$ dramatiq worker --skip-logging --log-file logs/tyche.log    # production：写入文件
+$ dramatiq entrypoint                             # development：日志打到控制台
+$ dramatiq entrypoint --log-file logs/tyche.log    # production：写入文件
 ```
 
-`--skip-logging` keeps dramatiq from installing its own root log handler, so
-the console output uses this project's log format instead of printing every
-record twice.
+`entrypoint` is the module dramatiq imports: it sets up the broker and then
+imports every task module so its actors get registered.
 
-Worker processes never open the log file themselves: each one hands its records
-to the main process over the pipe dramatiq sets up for it, and the main process
-is the only writer. Without `--log-file` that single output goes to the main
-process' stderr (the console, hence the default in development); with it, to the
-given file. Run from the repo root so the relative path resolves.
+Logging is left entirely to the CLI. Every worker process has its stdout and
+stderr pointed at a pipe back to the main process, which is the only writer, so
+all records land in one place and each line is tagged with its `[PID ...]`.
+Without `--log-file` that place is the main process' stderr (the console, hence
+the default in development); with it, the given file. Run from the repo root so
+the relative path resolves.
 
 `-p` sets the number of worker processes and `-t` the number of worker threads
 per process (defaults: one process per CPU, 8 threads).

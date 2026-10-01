@@ -9,16 +9,18 @@ python -m pip install pytest httpx2 python-dotenv redis dramatiq
 
 
 
-dramatiq worker --skip-logging
+dramatiq entrypoint
 
-dramatiq worker --skip-logging -p 1 -t 4
+# dev
+dramatiq entrypoint -p 1 -t 4
 
-dramatiq worker --skip-logging --log-file logs/tyche.log
+# prod
+dramatiq entrypoint --log-file logs/tyche.log
 
 
 # pycharm
 Module name -> dramatiq
-Parameters -> --skip-logging worker
+Parameters -> entrypoint
 
 
 
